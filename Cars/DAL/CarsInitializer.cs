@@ -7,7 +7,7 @@ using System.Web;
 namespace Cars.DAL
 {
     public class CarsInitializer : System.Data.Entity.DropCreateDatabaseIfModelChanges<RentalContext>
-    {//
+    {
         protected override void Seed(RentalContext context)
         {
             var stores = new List<Store>
