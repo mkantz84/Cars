@@ -1,0 +1,73 @@
+﻿@model Cars.Models.CarInfo
+
+@{
+    ViewBag.Title = "Details";
+}
+
+<h2>Details</h2>
+    <div >
+        <h4>Car</h4>
+        <hr />
+        <dl class="dl-horizontal">
+            <dt>
+                @Html.DisplayNameFor(model => model.Car.CarType.ModelName)
+            </dt>
+
+            <dd>
+                @Html.DisplayFor(model => model.Car.CarType.ModelName)
+            </dd>
+
+            <dt>
+                @Html.DisplayNameFor(model => model.Car.Store.StoreName)
+            </dt>
+
+            <dd>
+                @Html.DisplayFor(model => model.Car.Store.StoreName)
+            </dd>
+
+            <dt>
+                @Html.DisplayNameFor(model => model.Car.Kilometer)
+            </dt>
+
+            <dd>
+                @Html.DisplayFor(model => model.Car.Kilometer)
+            </dd>
+
+            <dt>
+                @Html.DisplayNameFor(model => model.Car.IsProper)
+            </dt>
+
+            <dd>
+                @Html.DisplayFor(model => model.Car.IsProper)
+            </dd>
+
+            <dt>
+                @Html.DisplayNameFor(model => model.Car.IsAvailable)
+            </dt>
+
+            <dd>
+                @Html.DisplayFor(model => model.Car.IsAvailable)
+            </dd>
+
+            <dt>
+                @Html.DisplayNameFor(model => model.CarType.DailyPrice)
+            </dt>
+
+            <dd>
+                @Html.DisplayFor(model => model.CarType.DailyPrice)
+            </dd>
+
+            <dt>
+                @Html.DisplayNameFor(model => model.CarType.LateDayPrice)
+            </dt>
+
+            <dd>
+                @Html.DisplayFor(model => model.CarType.LateDayPrice)
+            </dd>
+
+        </dl>
+    </div>
+<p>
+    @Html.ActionLink("Back to List", "CarsList")
+    @Html.ActionLink("Continue", "Purchase",Model.Car.CarNumber)
+</p>

@@ -1,0 +1,77 @@
+﻿@model IEnumerable<Cars.Models.Car>
+
+@{
+    ViewBag.Title = "CarsList";
+}
+@*<script src="~/Scripts/jquery-1.12.4.min.js"></script>
+<script src="~/Scripts/bootstrap.min.js"></script>*@
+@*<script src="~/Scripts/jquery-ui-1.12.1.min.js"></script>*@
+@*<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>*@
+@*<script src="https://code.jquery.com/jquery-1.12.4.js"></script>*@
+@*@Scripts.Render("~/bundles/jqueryui")*@
+<script>
+
+    //$(document).ready(function () {
+    //    $("#date").datepicker();
+    //});
+</script>
+<script>
+    $(".input-daterange input").each(function () {
+        $(this).datepicker("clearDates");
+    });
+</script>
+<script>
+    function a(carNumber) {
+        if (localStorage.interests == null) {
+            localStorage.interests = carNumber;
+        }
+        else {
+            localStorage.interests += "," + carNumber;
+        }
+    }
+</script>
+<h2>CarsList</h2>
+    Date:
+<div class="input-group input-daterange">
+    <input type="text" class="form-control datepicker">
+    <span class="input-group-addon">to</span>
+    <input type="text" class="form-control datepicker">
+</div>
+<table class="table">
+    <tr>
+        <th>
+            @Html.DisplayNameFor(model => model.CarType.ModelName)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Store.StoreName)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.CarNumber)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Kilometer)
+        </th>
+        <th></th>
+    </tr>
+
+    @foreach (var item in Model)
+    {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.CarType.ModelName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Store.StoreName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.CarNumber)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Kilometer)
+            </td>
+            <td onclick="a(@item.CarNumber)">
+                @Html.ActionLink("Continue", "Details", new { id = item.ID })
+        </tr>
+    }
+
+</table>
