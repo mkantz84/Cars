@@ -29,11 +29,15 @@ namespace Cars.Controllers
         public ActionResult CarsList()
         {
             var cars = db.Cars.Include(c => c.CarType).Include(c => c.Store);
+            CarData carData = new CarData
+            {
+                Cars = cars.Where(t => t.IsAvailable && t.IsProper),
+            };
             return View(cars.Where(t => t.IsAvailable && t.IsProper).ToList());
         }
 
         // GET: Cars/Details/5
-        public ActionResult Details(int? id)
+        public ActionResult Details(int? id, DateTime startDate, DateTime endDate)
         {
             if (id == null)
             {

@@ -216,6 +216,7 @@
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Models\Car.cs" />
+    <Compile Include="Models\CarData.cs" />
     <Compile Include="Models\CarInfo.cs" />
     <Compile Include="Models\CarType.cs" />
     <Compile Include="Models\Rental.cs" />
@@ -239,6 +240,7 @@
     <Content Include="Views\Cars\CarsList.cshtml" />
     <Content Include="Views\Cars\UsersList.cshtml" />
     <Content Include="Views\Cars\Index.cshtml" />
+    <Content Include="Views\Cars\temp.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

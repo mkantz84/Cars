@@ -4,7 +4,7 @@
     ViewBag.Title = "CarsList";
 }
 @*<script src="~/Scripts/jquery-1.12.4.min.js"></script>
-<script src="~/Scripts/bootstrap.min.js"></script>*@
+    <script src="~/Scripts/bootstrap.min.js"></script>*@
 @*<script src="~/Scripts/jquery-ui-1.12.1.min.js"></script>*@
 @*<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>*@
 @*<script src="https://code.jquery.com/jquery-1.12.4.js"></script>*@
@@ -21,22 +21,24 @@
     });
 </script>
 <script>
-    function a(carNumber) {
+    function a(carNumber,Id) {
         if (localStorage.interests == null) {
             localStorage.interests = carNumber;
         }
         else {
             localStorage.interests += "," + carNumber;
         }
+        var start = document.getElementById("txtStartDate").value;
+        var end = document.getElementById("txtEndDate").value;
+        var x = new XMLHttpRequest();
+        x.open("get", "/cars/Details?id=" + Id + "&startDate="+start+"&endDate="+end);
+        x.send();
     }
 </script>
 <h2>CarsList</h2>
-    Date:
-<div class="input-group input-daterange">
-    <input type="text" class="form-control datepicker">
-    <span class="input-group-addon">to</span>
-    <input type="text" class="form-control datepicker">
-</div>
+    Start Date:
+from:<input type="date"id="txtStartDate" value="" />
+to:<input type="date" id="txtEndDate" value="" />
 <table class="table">
     <tr>
         <th>
@@ -69,8 +71,10 @@
             <td>
                 @Html.DisplayFor(modelItem => item.Kilometer)
             </td>
-            <td onclick="a(@item.CarNumber)">
-                @Html.ActionLink("Continue", "Details", new { id = item.ID })
+            <td >
+                <a onclick="a(@item.CarNumber,@item.ID)">Continue</a>
+            </td>
+                @*@Html.ActionLink("Continue", "Details", new { id = item.ID })*@
         </tr>
     }
 
