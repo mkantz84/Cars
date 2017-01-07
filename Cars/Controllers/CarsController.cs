@@ -92,9 +92,20 @@ namespace Cars.Controllers
             if (user!=null && user.Password == password)
             {
                 FormsAuthentication.SetAuthCookie(userName, false);
+                if (returnUrl == "")
+                {
+                    return Redirect("/cars/index");
+                }
                 return Redirect(returnUrl);
             }
             return View();
+        }
+
+        public ActionResult logout()
+        {
+            Session.Clear();
+            FormsAuthentication.SignOut();
+            return Redirect("/cars/index");
         }
 
         // GET: Cars/Create
