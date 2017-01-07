@@ -18,7 +18,7 @@ namespace Cars.Models
         public string FullName { get; set; }
         [Required]
         public string UserName { get; set; }
-        public DateTime BirthDate { get; set; }
+        public DateTime? BirthDate { get; set; }
         [Required]
         public SexType Sex { get; set; }
         [Required]

@@ -243,6 +243,7 @@
     <Content Include="Views\Cars\temp.cshtml" />
     <Content Include="Views\Cars\login.cshtml" />
     <Content Include="Views\Cars\Purchase.cshtml" />
+    <Content Include="Views\Cars\CreateUser.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

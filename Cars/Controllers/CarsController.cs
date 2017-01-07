@@ -108,6 +108,28 @@ namespace Cars.Controllers
             return Redirect("/cars/index");
         }
 
+        public ActionResult CreateUser()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult CreateUser(User user)
+        {
+            if (ModelState.IsValid)
+            {
+                db.Users.Add(user);
+                db.SaveChanges();
+                FormsAuthentication.SetAuthCookie(user.UserName, false);
+                return RedirectToAction("Index");
+            }
+
+            //ViewBag.CarTypeID = new SelectList(db.CarTypes, "CarTypeID", "ModelName", car.CarTypeID);
+            //ViewBag.StoreID = new SelectList(db.stores, "StoreID", "StoreName", car.StoreID);
+            return View(user);
+        }
+
         // GET: Cars/Create
         public ActionResult Create()
         {
@@ -115,6 +137,8 @@ namespace Cars.Controllers
             ViewBag.StoreID = new SelectList(db.stores, "StoreID", "StoreName");
             return View();
         }
+
+
 
         // POST: Cars/Create
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
