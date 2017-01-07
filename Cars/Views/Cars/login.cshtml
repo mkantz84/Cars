@@ -1,0 +1,13 @@
+﻿
+@{
+    ViewBag.Title = "login";
+}
+
+<h2>login</h2>
+
+<form action='/cars/login?returnUrl=@Request.QueryString["returnUrl"]' method="post">
+    username:  <input name="userName" type="text" /><br />
+    password:<input name="password" type="password" /><br />
+    <input id="Submit1" type="submit" value="submit" />
+</form>
+

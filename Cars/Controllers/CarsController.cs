@@ -8,12 +8,15 @@ using System.Web;
 using System.Web.Mvc;
 using Cars.Models;
 using Cars.DAL;
+using System.Web.Security;
 
 namespace Cars.Controllers
 {
     public class CarsController : Controller
     {
-        private RentalContext db = new RentalContext();
+        private  RentalContext db = new RentalContext();
+        private static DateTime start;
+        private static DateTime end;
 
         // GET: Cars
         public ActionResult Index()
@@ -36,14 +39,26 @@ namespace Cars.Controllers
             return View(cars.Where(t => t.IsAvailable && t.IsProper).ToList());
         }
 
+        public void InitStartDate(DateTime startDate)
+        {
+            start = startDate;
+        }
+
+        public void InitEndDate(DateTime endDate)
+        {
+            end = endDate;
+        }
+
         // GET: Cars/Details/5
-        public ActionResult Details(int? id, DateTime startDate, DateTime endDate)
+        public ActionResult Details(int? id)
         {
             if (id == null)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
             Car car = db.Cars.Find(id);
+            car.HireDateStart = start;
+            car.HireDateEnd = end;
             CarType carType = db.CarTypes.Find(car.CarTypeID);
             CarInfo carinfo = new CarInfo { Car = car, CarType = carType };
             if (car == null)
@@ -54,8 +69,31 @@ namespace Cars.Controllers
         }
 
         [Authorize]
-        public ActionResult Purchase(int carNumber)
+        public ActionResult Purchase(int? id)
         {
+            Car car = db.Cars.Find(id);
+            car.HireDateStart = start;
+            car.HireDateEnd = end;
+            db.SaveChanges();
+            return View();
+        }
+
+        [HttpGet]
+        public ActionResult login()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        public ActionResult login(string userName, string password, string returnUrl)
+        {
+            User user = db.Users.FirstOrDefault(t => t.UserName == userName);
+            
+            if (user!=null && user.Password == password)
+            {
+                FormsAuthentication.SetAuthCookie(userName, false);
+                return Redirect(returnUrl);
+            }
             return View();
         }
 
@@ -147,13 +185,13 @@ namespace Cars.Controllers
             return RedirectToAction("Index");
         }
 
-        protected override void Dispose(bool disposing)
-        {
-            if (disposing)
-            {
-                db.Dispose();
-            }
-            base.Dispose(disposing);
-        }
+        //protected override void Dispose(bool disposing)
+        //{
+        //    if (disposing)
+        //    {
+        //        db.Dispose();
+        //    }
+        //    base.Dispose(disposing);
+        //}
     }
 }

@@ -241,6 +241,8 @@
     <Content Include="Views\Cars\UsersList.cshtml" />
     <Content Include="Views\Cars\Index.cshtml" />
     <Content Include="Views\Cars\temp.cshtml" />
+    <Content Include="Views\Cars\login.cshtml" />
+    <Content Include="Views\Cars\Purchase.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

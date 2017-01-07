@@ -10,6 +10,18 @@
         <hr />
         <dl class="dl-horizontal">
             <dt>
+                @Html.DisplayNameFor(model => model.Car.HireDateStart)
+            </dt>
+            <dd>
+                @Html.DisplayFor(model => model.Car.HireDateStart)
+            </dd>
+            <dt>
+                @Html.DisplayNameFor(model => model.Car.HireDateEnd)
+            </dt>
+            <dd>
+                @Html.DisplayFor(model => model.Car.HireDateEnd)
+            </dd>
+            <dt>
                 @Html.DisplayNameFor(model => model.Car.CarType.ModelName)
             </dt>
 
@@ -69,5 +81,5 @@
     </div>
 <p>
     @Html.ActionLink("Back to List", "CarsList")
-    @Html.ActionLink("Continue", "Purchase",Model.Car.CarNumber)
+    @Html.ActionLink("Continue", "Purchase", new { id = Model.Car.ID } )
 </p>

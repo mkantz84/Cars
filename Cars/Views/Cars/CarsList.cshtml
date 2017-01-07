@@ -28,17 +28,27 @@
         else {
             localStorage.interests += "," + carNumber;
         }
+        
+        
+        //var x = new XMLHttpRequest();
+        //x.open("get", "/cars/Details?id=" + Id + "&startDate="+start+"&endDate="+end);
+        //x.send();
+        //window.location.href="details.cshtml";
+        
+    }
+    function b() {
         var start = document.getElementById("txtStartDate").value;
+        $.post('InitStartDate', {  startDate: start });
+    }
+    function c() {
         var end = document.getElementById("txtEndDate").value;
-        var x = new XMLHttpRequest();
-        x.open("get", "/cars/Details?id=" + Id + "&startDate="+start+"&endDate="+end);
-        x.send();
+        $.post('InitEndDate', { endDate: end });
     }
 </script>
 <h2>CarsList</h2>
     Start Date:
-from:<input type="date"id="txtStartDate" value="" />
-to:<input type="date" id="txtEndDate" value="" />
+from:<input oninput="b()" type="date" id="txtStartDate" value="" />
+to:<input oninput="c()" type="date" id="txtEndDate" value="" />
 <table class="table">
     <tr>
         <th>
@@ -71,10 +81,11 @@ to:<input type="date" id="txtEndDate" value="" />
             <td>
                 @Html.DisplayFor(modelItem => item.Kilometer)
             </td>
-            <td >
-                <a onclick="a(@item.CarNumber,@item.ID)">Continue</a>
+            <td onclick="a(@item.CarNumber)">
+                @Html.ActionLink("Continue", "Details", new { id = item.ID })
+                @*<a style="cursor:context-menu" onclick="a(@item.CarNumber,@item.ID)">Continue</a>*@
             </td>
-                @*@Html.ActionLink("Continue", "Details", new { id = item.ID })*@
+            @*@Html.ActionLink("Continue", "Details", new { id = item.ID })*@
         </tr>
     }
 
