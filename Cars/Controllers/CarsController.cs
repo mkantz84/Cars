@@ -14,7 +14,7 @@ namespace Cars.Controllers
 {
     public class CarsController : Controller
     {
-        private  RentalContext db = new RentalContext();
+        private RentalContext db = new RentalContext();
         private static DateTime start;
         private static DateTime end;
 
@@ -57,10 +57,16 @@ namespace Cars.Controllers
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
             Car car = db.Cars.Find(id);
-            car.HireDateStart = start;
-            car.HireDateEnd = end;
+            //car.HireDateStart = start;
+            //car.HireDateEnd = end;
             CarType carType = db.CarTypes.Find(car.CarTypeID);
-            CarInfo carinfo = new CarInfo { Car = car, CarType = carType };
+            CarInfo carinfo = new CarInfo
+            {
+                Car = car,
+                CarType = carType,
+                HireDateStart=start,
+                HireDateEnd=end,
+            };
             if (car == null)
             {
                 return HttpNotFound();
@@ -71,11 +77,31 @@ namespace Cars.Controllers
         [Authorize]
         public ActionResult Purchase(int? id)
         {
+            int userId = int.Parse(System.Web.HttpContext.Current.User.Identity.Name);
             Car car = db.Cars.Find(id);
-            car.HireDateStart = start;
-            car.HireDateEnd = end;
+            //car.HireDateStart = start;
+            //car.HireDateEnd = end;
+            Rental rental = new Rental();
+
+            rental.CarNumber = car.CarNumber;
+            rental.StartDate = start;
+            rental.EndDate = end;
+            //int userId= db.Users.FirstOrDefault(t => t.UserName == name).UserID;
+            rental.UserId = userId;
+                //Car=car,
+            
+            db.Rentals.Add(rental);
             db.SaveChanges();
             return View();
+        }
+
+        [Authorize]
+        public ActionResult Purchases(int? id)
+        {
+            int userId = int.Parse(System.Web.HttpContext.Current.User.Identity.Name);
+            //int userId = db.Users.FirstOrDefault(t => t.UserName == name).UserID;
+            List<Rental> rentals = db.Rentals.Where(t => t.UserId == userId).ToList();
+            return View(rentals);
         }
 
         [HttpGet]
@@ -88,10 +114,10 @@ namespace Cars.Controllers
         public ActionResult login(string userName, string password, string returnUrl)
         {
             User user = db.Users.FirstOrDefault(t => t.UserName == userName);
-            
-            if (user!=null && user.Password == password)
+
+            if (user != null && user.Password == password)
             {
-                FormsAuthentication.SetAuthCookie(userName, false);
+                FormsAuthentication.SetAuthCookie(user.UserID.ToString(), false);
                 if (returnUrl == "")
                 {
                     return Redirect("/cars/index");

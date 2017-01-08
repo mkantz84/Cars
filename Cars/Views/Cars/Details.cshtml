@@ -4,22 +4,23 @@
     ViewBag.Title = "Details";
 }
 
+
 <h2>Details</h2>
     <div >
         <h4>Car</h4>
         <hr />
         <dl class="dl-horizontal">
-            <dt>
-                @Html.DisplayNameFor(model => model.Car.HireDateStart)
+            <dt >
+                @Html.DisplayNameFor(model => model.HireDateStart)
             </dt>
-            <dd>
-                @Html.DisplayFor(model => model.Car.HireDateStart)
+            <dd id="start">
+                @Html.DisplayFor(model => model.HireDateStart)
             </dd>
             <dt>
-                @Html.DisplayNameFor(model => model.Car.HireDateEnd)
+                @Html.DisplayNameFor(model => model.HireDateEnd)
             </dt>
-            <dd>
-                @Html.DisplayFor(model => model.Car.HireDateEnd)
+            <dd id="end">
+                @Html.DisplayFor(model => model.HireDateEnd)
             </dd>
             <dt>
                 @Html.DisplayNameFor(model => model.Car.CarType.ModelName)
@@ -46,26 +47,10 @@
             </dd>
 
             <dt>
-                @Html.DisplayNameFor(model => model.Car.IsProper)
-            </dt>
-
-            <dd>
-                @Html.DisplayFor(model => model.Car.IsProper)
-            </dd>
-
-            <dt>
-                @Html.DisplayNameFor(model => model.Car.IsAvailable)
-            </dt>
-
-            <dd>
-                @Html.DisplayFor(model => model.Car.IsAvailable)
-            </dd>
-
-            <dt>
                 @Html.DisplayNameFor(model => model.CarType.DailyPrice)
             </dt>
 
-            <dd>
+            <dd id="price">
                 @Html.DisplayFor(model => model.CarType.DailyPrice)
             </dd>
 
@@ -77,8 +62,35 @@
                 @Html.DisplayFor(model => model.CarType.LateDayPrice)
             </dd>
 
+            <dt>
+                Total price
+            </dt>
+
+            <dd id="calc" >
+                
+            </dd>
+
         </dl>
     </div>
+<script>
+    function a() {
+        var oneDay = 24 * 60 * 60 * 1000; // hours*minutes*seconds*milliseconds
+
+        var start = $("#start").text(); 
+        var splitStart = start.split("/");
+        var firstDate = new Date(splitStart);
+
+        var end = $("#end").text(); 
+        var splitEnd = end.split("/");
+        var secondDate = new Date(splitEnd);
+
+        var diffDays = Math.round(Math.abs((firstDate.getTime() - secondDate.getTime()) / (oneDay)));
+        var price = $("#price").text();
+        var y = diffDays * price;
+        document.getElementById("calc").innerHTML = y;
+    }
+    a();
+</script>
 <p>
     @Html.ActionLink("Back to List", "CarsList")
     @Html.ActionLink("Continue", "Purchase", new { id = Model.Car.ID } )

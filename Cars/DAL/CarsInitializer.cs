@@ -42,12 +42,13 @@ namespace Cars.DAL
             };
             cars.ForEach(s => context.Cars.Add(s));
             context.SaveChanges();
-            //var users = new List<User>
-            //{
-            ////new User{BirthDate=DateTime.Today,Email="kantzmichael@gmail.com",FullName="michael kantz",IsEmployee=true,IsManager=true,Password="1m0k38",Sex=SexType.MALE,UserName="titi"},
-            //};
-            //users.ForEach(s => context.Users.Add(s));
-            //context.SaveChanges();
+            var users = new List<User>
+            {
+                new User{Email="kantzmichael@gmail.com",FullName="michael kantz",IsEmployee=true,IsManager=true,Password="titi123",Sex=SexType.MALE,UserName="titi"},
+                new User{Email="kantzmichael@gmail.com",FullName="noa halperin",IsEmployee=false,IsManager=false,Password="noa123",Sex=SexType.FEMALE,UserName="noa"},
+            };
+            users.ForEach(s => context.Users.Add(s));
+            context.SaveChanges();
         }
     }
 }
