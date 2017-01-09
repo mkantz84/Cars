@@ -1,0 +1,159 @@
+﻿@model Cars.Models.Rental
+
+@{
+    ViewBag.Title = "returning";
+}
+<script>
+    function a() {
+        var oneDay = 24 * 60 * 60 * 1000; // hours*minutes*seconds*milliseconds
+
+        var start = $("#start").text();
+        var splitStart = start.split("/");
+        var firstDate = new Date(splitStart);
+
+        var end = $("#end").text();
+        var splitEnd = end.split("/");
+        var secondDate = new Date(splitEnd);
+
+        var ret = $("#return").val();
+        var splitRet = ret.split("/");
+        var returnDate = new Date(splitRet);
+
+        var diffDays = Math.round(Math.abs((firstDate.getTime() - secondDate.getTime()) / (oneDay)));
+        var lateDiffDays = Math.round(Math.abs((secondDate.getTime() - returnDate.getTime()) / (oneDay)));
+        document.getElementById("late").innerHTML = lateDiffDays;
+
+        var dayPrice = @ViewBag.dailyPrice;
+        var latePrice = @ViewBag.latePrice;
+
+        var totalPay = (diffDays * dayPrice) + (lateDiffDays * latePrice);
+        document.getElementById("total").innerHTML = totalPay;
+    }
+</script>
+<h2>returning</h2>
+
+@using (Html.BeginForm())
+{
+    @Html.AntiForgeryToken()
+
+    <div class="form-horizontal">
+        <h4>Rental</h4>
+        <div>
+            <hr />
+            <dl class="dl-horizontal">
+                <dt>
+                    @Html.DisplayNameFor(model => model.UserId)
+                </dt>
+                <dd>
+                    @Html.DisplayFor(model => model.UserId)
+                </dd>
+                <dt>
+                    @Html.DisplayNameFor(model => model.CarNumber)
+                </dt>
+                <dd>
+                    @Html.DisplayFor(model => model.CarNumber)
+                </dd>
+                <dt>
+                    @Html.DisplayNameFor(model => model.StartDate)
+                </dt>
+                <dd id="start">
+                    @Html.DisplayFor(model => model.StartDate)
+                </dd>
+                <dt>
+                    @Html.DisplayNameFor(model => model.EndDate)
+                </dt>
+                <dd id="end">
+                    @Html.DisplayFor(model => model.EndDate)
+                </dd>
+                <dt>
+                    Price per day
+                </dt>
+                <dd>
+                    @ViewBag.dailyPrice
+                </dd>
+                <dt>
+                    Price per day late
+                </dt>
+                <dd>
+                    @ViewBag.latePrice
+                </dd>
+            </dl>
+        </div>
+
+
+
+
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+        @Html.HiddenFor(model => model.RentalID)
+
+        @*<div class="form-group">
+                @Html.LabelFor(model => model.CarNumber, htmlAttributes: new { @class = "control-label col-md-2" })
+                <div class="col-md-10">
+                    @Html.EditorFor(model => model.CarNumber, new { htmlAttributes = new { @class = "form-control" } })
+                    @Html.ValidationMessageFor(model => model.CarNumber, "", new { @class = "text-danger" })
+                </div>
+            </div>*@
+
+        @*<div class="form-group">
+                @Html.LabelFor(model => model.UserId, "UserId", htmlAttributes: new { @class = "control-label col-md-2" })
+                <div class="col-md-10">
+                    @Html.DropDownList("UserId", null, htmlAttributes: new { @class = "form-control" })
+                    @Html.ValidationMessageFor(model => model.UserId, "", new { @class = "text-danger" })
+                </div>
+            </div>*@
+
+        @*<div class="form-group">
+                @Html.LabelFor(model => model.StartDate, htmlAttributes: new { @class = "control-label col-md-2" })
+                <div class="col-md-10">
+                    @Html.EditorFor(model => model.StartDate, new { htmlAttributes = new { @class = "form-control" } })
+                    @Html.ValidationMessageFor(model => model.StartDate, "", new { @class = "text-danger" })
+                </div>
+            </div>*@
+
+        @*<div class="form-group">
+                @Html.LabelFor(model => model.EndDate, htmlAttributes: new { @class = "control-label col-md-2" })
+                <div class="col-md-10">
+                    @Html.EditorFor(model => model.EndDate, new { htmlAttributes = new { @class = "form-control" } })
+                    @Html.ValidationMessageFor(model => model.EndDate, "", new { @class = "text-danger" })
+                </div>
+            </div>*@
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.ReturningDate, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.ReturningDate, new { htmlAttributes = new { @class = "form-control", @id = "return", @onchange = "a()" } })
+                @Html.ValidationMessageFor(model => model.ReturningDate, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            <div class="col-md-offset-2 col-md-10">
+                <input type="submit" value="Save" class="btn btn-default" />
+            </div>
+        </div>
+
+        <div>
+            <hr />
+            <dl class="dl-horizontal">
+                <dt>
+                    Number of days late
+                </dt>
+                <dd id="late">
+
+                </dd>
+
+                <dt>
+                    Total to pay
+                </dt>
+                <dd id="total">
+
+                </dd>
+            </dl>
+        </div>
+
+    </div>
+}
+
+<div>
+    @Html.ActionLink("Home", "Index")
+</div>

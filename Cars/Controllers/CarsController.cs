@@ -64,8 +64,8 @@ namespace Cars.Controllers
             {
                 Car = car,
                 CarType = carType,
-                HireDateStart=start,
-                HireDateEnd=end,
+                HireDateStart = start,
+                HireDateEnd = end,
             };
             if (car == null)
             {
@@ -77,7 +77,7 @@ namespace Cars.Controllers
         [Authorize]
         public ActionResult Purchase(int? id)
         {
-            int userId = int.Parse(System.Web.HttpContext.Current.User.Identity.Name);
+            string userId = System.Web.HttpContext.Current.User.Identity.Name;
             Car car = db.Cars.Find(id);
             //car.HireDateStart = start;
             //car.HireDateEnd = end;
@@ -88,20 +88,74 @@ namespace Cars.Controllers
             rental.EndDate = end;
             //int userId= db.Users.FirstOrDefault(t => t.UserName == name).UserID;
             rental.UserId = userId;
-                //Car=car,
-            
+            //Car=car,
+
             db.Rentals.Add(rental);
             db.SaveChanges();
             return View();
         }
 
         [Authorize]
-        public ActionResult Purchases(int? id)
+        public ActionResult Purchases()
         {
-            int userId = int.Parse(System.Web.HttpContext.Current.User.Identity.Name);
+            string userId = System.Web.HttpContext.Current.User.Identity.Name;
             //int userId = db.Users.FirstOrDefault(t => t.UserName == name).UserID;
             List<Rental> rentals = db.Rentals.Where(t => t.UserId == userId).ToList();
             return View(rentals);
+        }
+
+        [Authorize]
+        public ActionResult Workers()
+        {
+            string userId = System.Web.HttpContext.Current.User.Identity.Name;
+            User user = db.Users.FirstOrDefault(t => t.UserID == userId);
+            if (user.IsManager)
+            {
+                // todo: return Redirect("/cars/managers");
+            }
+            else if (user.IsEmployee)
+            {
+                return Redirect("/cars/employees");
+            }
+            return Redirect("/cars/index");
+        }
+
+        public ActionResult employees()
+        {
+            return View();
+        }
+
+        public ActionResult returning(string userId, int carNumber)
+        {
+            Rental rental = db.Rentals.FirstOrDefault(t => t.UserId == userId && t.CarNumber == carNumber);
+            if (rental != null)
+            {
+                CarType carType = db.CarTypes.FirstOrDefault(t => t.CarTypeID == db.Cars.FirstOrDefault(c => c.CarNumber == carNumber).CarTypeID);
+                ViewBag.dailyPrice = carType.DailyPrice;
+                ViewBag.latePrice = carType.LateDayPrice;
+                return View(rental);
+            }
+            return Redirect("/cars/employees");
+
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult returning(Rental rental)
+        {
+            if (ModelState.IsValid)
+            {
+                Rental rent = db.Rentals.Find(rental.RentalID);
+                rent.ReturningDate = rental.ReturningDate;
+                db.SaveChanges();
+                return Redirect("/cars/thanks");
+            }
+            return RedirectToAction("/cars/returning", rental.UserId, rental.CarNumber);
+        }
+
+        public ActionResult thanks()
+        {
+            return View();
         }
 
         [HttpGet]

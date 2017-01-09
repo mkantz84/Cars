@@ -240,11 +240,13 @@
     <Content Include="Views\Cars\CarsList.cshtml" />
     <Content Include="Views\Cars\UsersList.cshtml" />
     <Content Include="Views\Cars\Index.cshtml" />
-    <Content Include="Views\Cars\temp.cshtml" />
     <Content Include="Views\Cars\login.cshtml" />
     <Content Include="Views\Cars\Purchase.cshtml" />
     <Content Include="Views\Cars\CreateUser.cshtml" />
     <Content Include="Views\Cars\Purchases.cshtml" />
+    <Content Include="Views\Cars\employees.cshtml" />
+    <Content Include="Views\Cars\returning.cshtml" />
+    <Content Include="Views\Cars\thanks.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

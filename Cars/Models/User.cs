@@ -13,7 +13,9 @@ namespace Cars.Models
     }
     public class User
     {
-        public int UserID { get; set; }
+        [Key]
+        [Required]
+        public string UserID { get; set; }
         [Required]
         public string FullName { get; set; }
         [Required]

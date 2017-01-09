@@ -44,8 +44,8 @@ namespace Cars.DAL
             context.SaveChanges();
             var users = new List<User>
             {
-                new User{Email="kantzmichael@gmail.com",FullName="michael kantz",IsEmployee=true,IsManager=true,Password="titi123",Sex=SexType.MALE,UserName="titi"},
-                new User{Email="kantzmichael@gmail.com",FullName="noa halperin",IsEmployee=false,IsManager=false,Password="noa123",Sex=SexType.FEMALE,UserName="noa"},
+                new User{UserID="039469812", Email="kantzmichael@gmail.com",FullName="michael kantz",IsEmployee=true,IsManager=true,Password="titi123",Sex=SexType.MALE,UserName="titi"},
+                new User{UserID="036687986", Email="kantzmichael@gmail.com",FullName="noa halperin",IsEmployee=false,IsManager=false,Password="noa123",Sex=SexType.FEMALE,UserName="noa"},
             };
             users.ForEach(s => context.Users.Add(s));
             context.SaveChanges();
