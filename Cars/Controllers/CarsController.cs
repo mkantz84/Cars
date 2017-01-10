@@ -31,6 +31,16 @@ namespace Cars.Controllers
 
         public ActionResult CarsList()
         {
+            string userId = System.Web.HttpContext.Current.User.Identity.Name;
+
+            if (userId != "")
+            {
+                bool isManager = db.Users.FirstOrDefault(t => t.UserID == userId).IsManager;
+                if (isManager)
+                {
+                    return Redirect("/cars/managercarslist");
+                }
+            }
             var cars = db.Cars.Include(c => c.CarType).Include(c => c.Store);
             CarData carData = new CarData
             {
@@ -111,18 +121,28 @@ namespace Cars.Controllers
             User user = db.Users.FirstOrDefault(t => t.UserID == userId);
             if (user.IsManager)
             {
-                // todo: return Redirect("/cars/managers");
+                return Redirect("/cars/manager");
             }
             else if (user.IsEmployee)
             {
-                return Redirect("/cars/employees");
+                return Redirect("/cars/employee");
             }
             return Redirect("/cars/index");
         }
 
-        public ActionResult employees()
+        public ActionResult employee()
         {
             return View();
+        }
+
+        public ActionResult manager()
+        {
+            return View();
+        }
+
+        public ActionResult ManagerCarsList()
+        {
+            return View(db.Cars.ToList());
         }
 
         public ActionResult returning(string userId, int carNumber)
@@ -261,10 +281,12 @@ namespace Cars.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit([Bind(Include = "CarNumber,Kilometer,IsProper,IsAvailable,CarTypeID,StoreID")] Car car)
+        public ActionResult Edit([Bind(Include = "ID,CarNumber,Kilometer,IsProper,IsAvailable,CarTypeID,StoreID")] Car car)
         {
             if (ModelState.IsValid)
             {
+                //Car editedCar = db.Cars.Find(car.ID);
+                //editedCar = car;
                 db.Entry(car).State = EntityState.Modified;
                 db.SaveChanges();
                 return RedirectToAction("Index");
