@@ -3,18 +3,23 @@
 @{
     ViewBag.Title = "CarsList";
 }
-@*<script src="~/Scripts/jquery-1.12.4.min.js"></script>
-    <script src="~/Scripts/bootstrap.min.js"></script>*@
+
+
+
+@*<script src="~/Scripts/jquery-1.12.4.min.js"></script>*@
+@*<script src="~/Scripts/bootstrap.min.js"></script>*@
 @*<script src="~/Scripts/jquery-ui-1.12.1.min.js"></script>*@
 @*<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>*@
 @*<script src="https://code.jquery.com/jquery-1.12.4.js"></script>*@
 @*@Scripts.Render("~/bundles/jqueryui")*@
-<script>
+@*<script>
+    $(document).ready(function () {
+        $("#date").datepicker();
+    });
+</script>*@
 
-    //$(document).ready(function () {
-    //    $("#date").datepicker();
-    //});
-</script>
+
+
 <script>
     $(".input-daterange input").each(function () {
         $(this).datepicker("clearDates");
@@ -87,9 +92,7 @@ to:<input type="date" id="txtEndDate" value="" />
             </td>
             <td onclick="a(@item.CarNumber)">
                 @Html.ActionLink("Continue", "Details", new { id = item.ID }, htmlAttributes: new { @onclick = "return validate()" })
-                @*<a style="cursor:context-menu" onclick="a(@item.CarNumber,@item.ID)">Continue</a>*@
             </td>
-            @*@Html.ActionLink("Continue", "Details", new { id = item.ID })*@
         </tr>
     }
 
