@@ -17,10 +17,24 @@ namespace Cars.Controllers
         private RentalContext db = new RentalContext();
         private static DateTime start;
         private static DateTime end;
+       
 
         // GET: Cars
         public ActionResult Index()
         {
+            string id = System.Web.HttpContext.Current.User.Identity.Name;
+            if (id != "")
+            {
+                Session["authname"] = db.Users.Find(id).UserName;
+            }
+
+            //ViewBag.authid = "empty";
+            //string id=System.Web.HttpContext.Current.User.Identity.Name;            
+            //if (id != "")
+            //{
+            //    ViewBag.authid = id;
+            //    ViewBag.username = db.Users.Find(id).UserName;
+            //}
             return View();
         }
 
@@ -206,7 +220,7 @@ namespace Cars.Controllers
             if (user != null && user.Password == password)
             {
                 FormsAuthentication.SetAuthCookie(user.UserID.ToString(), false);
-                if (returnUrl == "")
+                if (returnUrl == "" || returnUrl == null)
                 {
                     return Redirect("/cars/index");
                 }
@@ -494,7 +508,7 @@ namespace Cars.Controllers
         public ActionResult CreateOrder()
         {
             ViewBag.users = db.Users.ToList();
-            ViewBag.cars = db.Cars.ToList();        
+            ViewBag.cars = db.Cars.ToList();
             return View();
         }
 
@@ -507,7 +521,7 @@ namespace Cars.Controllers
                 db.Rentals.Add(rental);
                 db.SaveChanges();
                 return RedirectToAction("Index");
-            }            
+            }
             return View(rental);
         }
 
@@ -545,7 +559,7 @@ namespace Cars.Controllers
                 db.Entry(carType).State = EntityState.Modified;
                 db.SaveChanges();
                 return RedirectToAction("Index");
-            }            
+            }
             return View(carType);
         }
 
@@ -587,8 +601,8 @@ namespace Cars.Controllers
 
         public ActionResult CreateCarType()
         {
-           //ViewBag.users = db.Users.ToList();
-           //ViewBag.cars = db.Cars.ToList();
+            //ViewBag.users = db.Users.ToList();
+            //ViewBag.cars = db.Cars.ToList();
             return View();
         }
 
