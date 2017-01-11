@@ -1,0 +1,63 @@
+﻿@model IEnumerable<Cars.Models.CarType>
+
+@{
+    ViewBag.Title = "ManagerCarTypesList";
+}
+
+<h2>ManagerCarTypesList</h2>
+
+<p>
+    @Html.ActionLink("Create New", "CreateCarType")
+</p>
+<table class="table">
+    <tr>
+        <th>
+            @Html.DisplayNameFor(model => model.ModelName)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.ManifacturerName)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.DailyPrice)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.LateDayPrice)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Year)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Gear)
+        </th>
+        <th></th>
+    </tr>
+
+@foreach (var item in Model) {
+    <tr>
+        <td>
+            @Html.DisplayFor(modelItem => item.ModelName)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.ManifacturerName)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.DailyPrice)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.LateDayPrice)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.Year)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.Gear)
+        </td>
+        <td>
+            @Html.ActionLink("Edit", "EditCarType", new { id=item.CarTypeID }) |
+            @Html.ActionLink("Details", "CarTypeDetails", new { id=item.CarTypeID }) |
+            @Html.ActionLink("Delete", "DeleteCarType", new { id=item.CarTypeID })
+        </td>
+    </tr>
+}
+
+</table>

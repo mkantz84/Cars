@@ -1,0 +1,66 @@
+﻿@model Cars.Models.CarType
+
+@{
+    ViewBag.Title = "CarTypeDetails";
+}
+
+<h2>CarTypeDetails</h2>
+
+<div>
+    <h4>CarType</h4>
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.ModelName)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.ModelName)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.ManifacturerName)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.ManifacturerName)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.DailyPrice)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.DailyPrice)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.LateDayPrice)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.LateDayPrice)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Year)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Year)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Gear)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Gear)
+        </dd>
+
+    </dl>
+</div>
+<p>
+    @Html.ActionLink("Edit", "Edit", new { id = Model.CarTypeID }) |
+    @Html.ActionLink("Back to List", "Index")
+</p>

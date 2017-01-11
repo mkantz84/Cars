@@ -84,6 +84,16 @@ namespace Cars.Controllers
             return View(carinfo);
         }
 
+        public ActionResult UserDetails(string id)
+        {
+            User user = db.Users.Find(id);
+            if (user == null)
+            {
+                return HttpNotFound();
+            }
+            return View(user);
+        }
+
         [Authorize]
         public ActionResult Purchase(int? id)
         {
@@ -110,6 +120,10 @@ namespace Cars.Controllers
         {
             string userId = System.Web.HttpContext.Current.User.Identity.Name;
             //int userId = db.Users.FirstOrDefault(t => t.UserName == name).UserID;
+            //if (db.Users.FirstOrDefault(t=>t.UserID==userId).IsManager)
+            //{
+            //    return View("ManagerOrdersList");
+            //}
             List<Rental> rentals = db.Rentals.Where(t => t.UserId == userId).ToList();
             return View(rentals);
         }
@@ -210,6 +224,17 @@ namespace Cars.Controllers
 
         public ActionResult CreateUser()
         {
+            string userId = System.Web.HttpContext.Current.User.Identity.Name;
+
+            if (userId != "")
+            {
+                User user = db.Users.Find(userId);
+                if (user.IsManager)
+                {
+                    return View("ManagerCreateUser");
+                }
+                return Redirect("/cars/index");
+            }
             return View();
         }
 
@@ -217,11 +242,15 @@ namespace Cars.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult CreateUser(User user)
         {
+            string userId = System.Web.HttpContext.Current.User.Identity.Name;
             if (ModelState.IsValid)
             {
                 db.Users.Add(user);
                 db.SaveChanges();
-                FormsAuthentication.SetAuthCookie(user.UserName, false);
+                if (userId == "")
+                {
+                    FormsAuthentication.SetAuthCookie(user.UserID, false);
+                }
                 return RedirectToAction("Index");
             }
 
@@ -238,7 +267,10 @@ namespace Cars.Controllers
             return View();
         }
 
-
+        public ActionResult ManagerUsersList()
+        {
+            return View(db.Users.ToList());
+        }
 
         // POST: Cars/Create
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
@@ -296,6 +328,41 @@ namespace Cars.Controllers
             return View(car);
         }
 
+        // GET: Cars/EditUser/5
+        public ActionResult EditUser(string id)
+        {
+            if (id == null)
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
+            User user = db.Users.Find(id);
+            if (user == null)
+            {
+                return HttpNotFound();
+            }
+            //ViewBag.CarTypeID = new SelectList(db.CarTypes, "CarTypeID", "ModelName", car.CarTypeID);
+            //ViewBag.StoreID = new SelectList(db.stores, "StoreID", "StoreName", car.StoreID);
+            return View(user);
+        }
+
+        // POST: Cars/EditUser/5
+        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
+        // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult EditUser([Bind(Include = "UserID,FullName,UserName,BirthDate,Sex,Email,Password,IsEmployee,IsManager")] User user)
+        {
+            if (ModelState.IsValid)
+            {
+                db.Entry(user).State = EntityState.Modified;
+                db.SaveChanges();
+                return RedirectToAction("Index");
+            }
+            //ViewBag.CarTypeID = new SelectList(db.CarTypes, "CarTypeID", "ModelName", car.CarTypeID);
+            //ViewBag.StoreID = new SelectList(db.stores, "StoreID", "StoreName", car.StoreID);
+            return View(user);
+        }
+
         // GET: Cars/Delete/5
         public ActionResult Delete(int? id)
         {
@@ -322,13 +389,220 @@ namespace Cars.Controllers
             return RedirectToAction("Index");
         }
 
-        //protected override void Dispose(bool disposing)
-        //{
-        //    if (disposing)
-        //    {
-        //        db.Dispose();
-        //    }
-        //    base.Dispose(disposing);
-        //}
+        // GET: Cars/DeleteUser/5
+        public ActionResult DeleteUser(string id)
+        {
+            if (id == null)
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
+            User user = db.Users.Find(id);
+            if (user == null)
+            {
+                return HttpNotFound();
+            }
+            return View(user);
+        }
+
+        // POST: Cars/DeleteUser/5
+        [HttpPost, ActionName("DeleteUser")]
+        [ValidateAntiForgeryToken]
+        public ActionResult DeleteUserConfirmed(int id)
+        {
+            User user = db.Users.Find(id);
+            db.Users.Remove(user);
+            db.SaveChanges();
+            return RedirectToAction("Index");
+        }
+
+        public ActionResult ManagerOrderssList()
+        {
+            return View(db.Rentals.ToList());
+        }
+
+        // GET: Cars/EditOrder/5
+        public ActionResult EditOrder(int? id)
+        {
+            if (id == null)
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
+            Rental rental = db.Rentals.Find(id);
+            if (rental == null)
+            {
+                return HttpNotFound();
+            }
+            //ViewBag.CarTypeID = new SelectList(db.CarTypes, "CarTypeID", "ModelName", car.CarTypeID);
+            //ViewBag.StoreID = new SelectList(db.stores, "StoreID", "StoreName", car.StoreID);
+            return View(rental);
+        }
+
+        // POST: Cars/EditOrder/5
+        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
+        // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult EditOrder(Rental rental)
+        {
+            if (ModelState.IsValid)
+            {
+                db.Entry(rental).State = EntityState.Modified;
+                db.SaveChanges();
+                return RedirectToAction("Index");
+            }
+            //ViewBag.CarTypeID = new SelectList(db.CarTypes, "CarTypeID", "ModelName", car.CarTypeID);
+            //ViewBag.StoreID = new SelectList(db.stores, "StoreID", "StoreName", car.StoreID);
+            return View(rental);
+        }
+
+        public ActionResult OrderDetails(int? id)
+        {
+            Rental rental = db.Rentals.Find(id);
+            if (rental == null)
+            {
+                return HttpNotFound();
+            }
+            return View(rental);
+        }
+
+        // GET: Cars/Delete/5
+        public ActionResult DeleteOrder(int? id)
+        {
+            if (id == null)
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
+            Rental rental = db.Rentals.Find(id);
+            if (rental == null)
+            {
+                return HttpNotFound();
+            }
+            return View(rental);
+        }
+
+        // POST: Cars/Delete/5
+        [HttpPost, ActionName("DeleteOrder")]
+        [ValidateAntiForgeryToken]
+        public ActionResult DeleteOrderConfirmed(int id)
+        {
+            Rental rental = db.Rentals.Find(id);
+            db.Rentals.Remove(rental);
+            db.SaveChanges();
+            return RedirectToAction("Index");
+        }
+
+        public ActionResult CreateOrder()
+        {
+            ViewBag.users = db.Users.ToList();
+            ViewBag.cars = db.Cars.ToList();        
+            return View();
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult CreateOrder(Rental rental)
+        {
+            if (ModelState.IsValid)
+            {
+                db.Rentals.Add(rental);
+                db.SaveChanges();
+                return RedirectToAction("Index");
+            }            
+            return View(rental);
+        }
+
+        public ActionResult ManagerCarTypesList()
+        {
+            return View(db.CarTypes.ToList());
+        }
+
+        // GET: Cars/EditCarType/5
+        public ActionResult EditCarType(int? id)
+        {
+            if (id == null)
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
+            CarType carType = db.CarTypes.Find(id);
+            if (carType == null)
+            {
+                return HttpNotFound();
+            }
+            //ViewBag.CarTypeID = new SelectList(db.CarTypes, "CarTypeID", "ModelName", car.CarTypeID);
+            //ViewBag.StoreID = new SelectList(db.stores, "StoreID", "StoreName", car.StoreID);
+            return View(carType);
+        }
+
+        // POST: Cars/EditCarType/5
+        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
+        // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult EditCarType(CarType carType)
+        {
+            if (ModelState.IsValid)
+            {
+                db.Entry(carType).State = EntityState.Modified;
+                db.SaveChanges();
+                return RedirectToAction("Index");
+            }            
+            return View(carType);
+        }
+
+        public ActionResult CarTypeDetails(int? id)
+        {
+            CarType carType = db.CarTypes.Find(id);
+            if (carType == null)
+            {
+                return HttpNotFound();
+            }
+            return View(carType);
+        }
+
+        // GET: Cars/DeleteCarType/5
+        public ActionResult DeleteCarType(int? id)
+        {
+            if (id == null)
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
+            CarType carType = db.CarTypes.Find(id);
+            if (carType == null)
+            {
+                return HttpNotFound();
+            }
+            return View(carType);
+        }
+
+        // POST: Cars/DeleteCarType/5
+        [HttpPost, ActionName("DeleteCarType")]
+        [ValidateAntiForgeryToken]
+        public ActionResult DeleteCarTypeConfirmed(int id)
+        {
+            CarType carType = db.CarTypes.Find(id);
+            db.CarTypes.Remove(carType);
+            db.SaveChanges();
+            return RedirectToAction("Index");
+        }
+
+        public ActionResult CreateCarType()
+        {
+           //ViewBag.users = db.Users.ToList();
+           //ViewBag.cars = db.Cars.ToList();
+            return View();
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult CreateCarType(CarType carType)
+        {
+            if (ModelState.IsValid)
+            {
+                db.CarTypes.Add(carType);
+                db.SaveChanges();
+                return RedirectToAction("Index");
+            }
+            return View(carType);
+        }
     }
 }

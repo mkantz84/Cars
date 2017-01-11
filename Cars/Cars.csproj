@@ -249,6 +249,21 @@
     <Content Include="Views\Cars\manager.cshtml" />
     <Content Include="Views\Cars\ManagerCarsList.cshtml" />
     <Content Include="Views\Cars\Delete.cshtml" />
+    <Content Include="Views\Cars\ManagerUsersList.cshtml" />
+    <Content Include="Views\Cars\EditUser.cshtml" />
+    <Content Include="Views\Cars\UserDetails.cshtml" />
+    <Content Include="Views\Cars\DeleteUser.cshtml" />
+    <Content Include="Views\Cars\ManagerCreateUser.cshtml" />
+    <Content Include="Views\Cars\ManagerOrderssList.cshtml" />
+    <Content Include="Views\Cars\EditOrder.cshtml" />
+    <Content Include="Views\Cars\OrderDetails.cshtml" />
+    <Content Include="Views\Cars\DeleteOrder.cshtml" />
+    <Content Include="Views\Cars\CreateOrder.cshtml" />
+    <Content Include="Views\Cars\ManagerCarTypesList.cshtml" />
+    <Content Include="Views\Cars\EditCarType.cshtml" />
+    <Content Include="Views\Cars\CarTypeDetails.cshtml" />
+    <Content Include="Views\Cars\DeleteCarType.cshtml" />
+    <Content Include="Views\Cars\CreateCarType.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
