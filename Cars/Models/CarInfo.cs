@@ -10,8 +10,10 @@ namespace Cars.Models
     {
         public Car Car { get; set; }
         public CarType CarType { get; set; }
+        [Required]
         [DataType(DataType.Date)]
         public DateTime? HireDateStart { get; set; }
+        [Required]
         [DataType(DataType.Date)]
         public DateTime? HireDateEnd { get; set; }
     }
