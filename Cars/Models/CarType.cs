@@ -20,6 +20,7 @@ namespace Cars.Models
         public int LateDayPrice { get; set; }
         public int Year { get; set; }
         public GearType? Gear { get; set; }
+        public string picture { get; set; }
 
         public virtual ICollection<Car> Cars { get; set; }
 

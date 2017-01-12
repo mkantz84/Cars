@@ -17,7 +17,7 @@ namespace Cars.Controllers
         private RentalContext db = new RentalContext();
         private static DateTime start;
         private static DateTime end;
-       
+
 
         // GET: Cars
         public ActionResult Index()
@@ -25,7 +25,20 @@ namespace Cars.Controllers
             string id = System.Web.HttpContext.Current.User.Identity.Name;
             if (id != "")
             {
-                Session["authname"] = db.Users.Find(id).UserName;
+                User authUser = db.Users.Find(id);
+                Session["authname"] = authUser.UserName;
+                if (authUser.IsManager)
+                {
+                    Session["authrole"] = "Manager";
+                }
+                else if (authUser.IsEmployee)
+                {
+                    Session["authrole"] = "Employee";
+                }
+                else
+                {
+                    Session["authrole"] = "Customer";
+                }
             }
 
             //ViewBag.authid = "empty";
@@ -60,7 +73,8 @@ namespace Cars.Controllers
             {
                 Cars = cars.Where(t => t.IsAvailable && t.IsProper),
             };
-            return View(cars.Where(t => t.IsAvailable && t.IsProper).ToList());
+            //return View(cars.Where(t => t.IsAvailable && t.IsProper).ToList());
+            return View(db.CarTypes.ToList());
         }
 
         public void InitStartDate(DateTime startDate)
@@ -80,18 +94,39 @@ namespace Cars.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Car car = db.Cars.Find(id);
+            //Car car = db.Cars.Find(id);
             //car.HireDateStart = start;
             //car.HireDateEnd = end;
-            CarType carType = db.CarTypes.Find(car.CarTypeID);
+            Car selectedCar=new Car();
+            List<Rental> rentals = 
+                db.Rentals.Where(t => (t.StartDate > start && t.StartDate < end) || (t.StartDate < start && t.EndDate > start)).ToList();
+            List<Car> unavalaibleCars = rentals.Select(t => t.Car).ToList();
+            //do
+            //{
+            //    selectedCar = db.Cars.FirstOrDefault(t => t.CarTypeID == id);  //t.ID != unavalaibleCars.Find(t.ID).ID);
+            //} while (unavalaibleCars.Exists(c => c.ID == selectedCar.ID));
+            foreach (var item in db.Cars)
+            {
+                if (item.CarTypeID==id)
+                {
+                    selectedCar = item;
+                    if (!unavalaibleCars.Exists(c => c.ID == selectedCar.ID))
+                    {
+                        break;
+                    }
+                }
+            }
+            
+
+            CarType carType = db.CarTypes.Find(id);
             CarInfo carinfo = new CarInfo
             {
-                Car = car,
+                Car = selectedCar,
                 CarType = carType,
                 HireDateStart = start,
                 HireDateEnd = end,
             };
-            if (car == null)
+            if (carType == null)
             {
                 return HttpNotFound();
             }
@@ -117,6 +152,7 @@ namespace Cars.Controllers
             //car.HireDateEnd = end;
             Rental rental = new Rental();
 
+            rental.Car = car;
             rental.CarNumber = car.CarNumber;
             rental.StartDate = start;
             rental.EndDate = end;
@@ -215,11 +251,25 @@ namespace Cars.Controllers
         [HttpPost]
         public ActionResult login(string userName, string password, string returnUrl)
         {
-            User user = db.Users.FirstOrDefault(t => t.UserName == userName);
+            User user = db.Users.FirstOrDefault(t => t.UserName == userName && t.Password == password);
 
-            if (user != null && user.Password == password)
+            if (user != null)
             {
                 FormsAuthentication.SetAuthCookie(user.UserID.ToString(), false);
+                Session["authname"] = userName;
+
+                if (user.IsManager)
+                {
+                    Session["authrole"] = "Manager";
+                }
+                else if (user.IsEmployee)
+                {
+                    Session["authrole"] = "Employee";
+                }
+                else
+                {
+                    Session["authrole"] = "Customer";
+                }
                 if (returnUrl == "" || returnUrl == null)
                 {
                     return Redirect("/cars/index");

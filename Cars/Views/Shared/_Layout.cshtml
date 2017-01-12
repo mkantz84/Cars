@@ -21,7 +21,7 @@
     <script>
         $(document).ready(function () {
 
-            var authid="@User.Identity.Name"
+            var authid = "@User.Identity.Name"
             if (authid == "") {
                 $("#notsigned").show();
             }
@@ -104,7 +104,13 @@
 
                 <ul class="nav navbar-nav navbar-right" id="signed" hidden="hidden">
                     <li class="dropdown">
-                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Hello @Session["authname"]<span class="caret"></span></a>
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+                            <center>
+                                Hello @Session["authname"]<br />
+                                (@Session["authrole"])
+                                <span class="caret"></span>
+                            </center>
+                        </a>
                         <ul class="dropdown-menu">
                             <li><a href="/cars/purchases">MY PURCHASES</a></li>
                             <li><a href="/cars/workers">WORKERS ACTIONS</a></li>

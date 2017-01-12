@@ -21,10 +21,10 @@ namespace Cars.DAL
             context.SaveChanges();
             var carTypes = new List<CarType>
             {
-            new CarType{CarTypeID=1,ModelName="Golf",ManifacturerName="Wolkswagen",DailyPrice=30,LateDayPrice=40,Gear=GearType.MANUAL,Year=2016},
-            new CarType{CarTypeID=2,ModelName="Ibiza",ManifacturerName="Seat",DailyPrice=25,LateDayPrice=35,Gear=GearType.AUTOMATIC,Year=2016},
-            new CarType{CarTypeID=3,ModelName="Fabia",ManifacturerName="Skoda",DailyPrice=30,LateDayPrice=45,Gear=GearType.AUTOMATIC,Year=2016},
-            new CarType{CarTypeID=4,ModelName="S",ManifacturerName="Mercedes",DailyPrice=60,LateDayPrice=80,Gear=GearType.AUTOMATIC,Year=2015},
+            new CarType{CarTypeID=1,ModelName="Golf",ManifacturerName="Wolkswagen",DailyPrice=30,LateDayPrice=40,Gear=GearType.MANUAL,Year=2016,picture="/Content/themes/base/images/golf.jpg"},
+            new CarType{CarTypeID=2,ModelName="Ibiza",ManifacturerName="Seat",DailyPrice=25,LateDayPrice=35,Gear=GearType.AUTOMATIC,Year=2016,picture="/Content/themes/base/images/ibiza.jpg"},
+            new CarType{CarTypeID=3,ModelName="Fabia",ManifacturerName="Skoda",DailyPrice=30,LateDayPrice=45,Gear=GearType.AUTOMATIC,Year=2016,picture="/Content/themes/base/images/fabia.jpg"},
+            new CarType{CarTypeID=4,ModelName="S",ManifacturerName="Mercedes",DailyPrice=60,LateDayPrice=80,Gear=GearType.AUTOMATIC,Year=2015,picture="/Content/themes/base/images/mercedes_s.jpg"},
             };
             carTypes.ForEach(s => context.CarTypes.Add(s));
             context.SaveChanges();

@@ -1,4 +1,4 @@
-﻿@model IEnumerable<Cars.Models.Car>
+﻿@model IEnumerable<Cars.Models.CarType>
 
 @{
     ViewBag.Title = "CarsList";
@@ -13,11 +13,67 @@
 @*<script src="https://code.jquery.com/jquery-1.12.4.js"></script>*@
 @*@Scripts.Render("~/bundles/jqueryui")*@
 @*<script>
-    $(document).ready(function () {
-        $("#date").datepicker();
-    });
-</script>*@
+        $(document).ready(function () {
+            $("#date").datepicker();
+        });
+    </script>*@
+<style>
+    .glyphicon {
+        margin-right: 5px;
+    }
 
+    .thumbnail {
+        margin-bottom: 20px;
+        padding: 0px;
+        -webkit-border-radius: 0px;
+        -moz-border-radius: 0px;
+        border-radius: 0px;
+    }
+
+    .item.list-group-item {
+        float: none;
+        width: 100%;
+        background-color: #fff;
+        margin-bottom: 10px;
+    }
+
+        .item.list-group-item:nth-of-type(odd):hover, .item.list-group-item:hover {
+            background: #428bca;
+        }
+
+        .item.list-group-item .list-group-image {
+            margin-right: 10px;
+        }
+
+        .item.list-group-item .thumbnail {
+            margin-bottom: 0px;
+        }
+
+        .item.list-group-item .caption {
+            padding: 9px 9px 0px 9px;
+        }
+
+        .item.list-group-item:nth-of-type(odd) {
+            background: #eeeeee;
+        }
+
+        .item.list-group-item:before, .item.list-group-item:after {
+            display: table;
+            content: " ";
+        }
+
+        .item.list-group-item img {
+            float: left;
+        }
+
+        .item.list-group-item:after {
+            clear: both;
+        }
+
+    .list-group-item-text {
+        margin: 0 0 11px;
+    }
+</style>
 
 
 <script>
@@ -54,46 +110,111 @@
         $.post('InitEndDate', { endDate: end });
     }
 </script>
-<h2>CarsList</h2>
-    Start Date:
-from:<input type="date" id="txtStartDate" value="" />
-to:<input type="date" id="txtEndDate" value="" />
-<table class="table">
-    <tr>
-        <th>
-            @Html.DisplayNameFor(model => model.CarType.ModelName)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.Store.StoreName)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.CarNumber)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.Kilometer)
-        </th>
-        <th></th>
-    </tr>
 
-    @foreach (var item in Model)
-    {
+<script>
+    $(document).ready(function () {
+        $('#list').click(function (event) {
+            event.preventDefault();
+            $('#products .item').addClass('list-group-item');
+        });
+        $('#grid').click(function (event) {
+            event.preventDefault();
+            $('#products .item').removeClass('list-group-item');
+            $('#products .item').addClass('grid-group-item');
+        });
+    });
+</script>
+
+<div class="container">
+    <div class="well well-sm">
+        <strong>Cars</strong>
+        from:<input type="date" id="txtStartDate" value="" />
+        to:<input type="date" id="txtEndDate" value="" />
+        <div class="btn-group">
+            <a href="#" id="list" class="btn btn-default btn-sm">
+                <span class="glyphicon glyphicon-th-list">
+                </span>List
+            </a> <a href="#" id="grid" class="btn btn-default btn-sm">
+                <span class="glyphicon glyphicon-th"></span>Grid
+            </a>
+        </div>
+    </div>
+
+
+    <div id="products" class="row list-group">
+        @foreach (var item in Model)
+        {
+            <div class="item  col-xs-4 col-lg-4">
+                <div class="thumbnail">
+                    <img style="max-height:150px;" class="group list-group-image" src=@item.picture alt="@item.ModelName picture" />
+                    <div class="caption">
+                        <h4 class="group inner list-group-item-heading">
+                            @item.ManifacturerName @item.ModelName
+                        </h4>
+                        @*<p class="group inner list-group-item-text">
+                            Pick up from @item.Store.StoreName
+                        </p>*@
+                        <div class="row">
+                            <div class="col-xs-12 col-md-6">
+                                <p class="lead">
+                                    $@item.DailyPrice per day
+                                </p>
+                            </div>
+                            <div class="col-xs-12 col-md-6">
+                                @Html.ActionLink("Continue", "Details", new { id = item.CarTypeID }, htmlAttributes: new { @class = "btn btn-success", @onclick = "return validate()" })
+                                @*<a class="btn btn-success" href="/cars/Detailes">Continue</a>*@
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+
+
+
+@*<h2>CarsList</h2>
+        Start Date:
+        from:<input type="date" id="txtStartDate" value="" />
+        to:<input type="date" id="txtEndDate" value="" />
+    <table class="table">
         <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.CarType.ModelName)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Store.StoreName)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.CarNumber)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Kilometer)
-            </td>
-            <td onclick="a(@item.CarNumber)">
-                @Html.ActionLink("Continue", "Details", new { id = item.ID }, htmlAttributes: new { @onclick = "return validate()" })
-            </td>
+            <th>
+                @Html.DisplayNameFor(model => model.CarType.ModelName)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Store.StoreName)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.CarNumber)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Kilometer)
+            </th>
+            <th></th>
         </tr>
-    }
 
-</table>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.CarType.ModelName)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Store.StoreName)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.CarNumber)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Kilometer)
+                </td>
+                <td onclick="a(@item.CarNumber)">
+                    @Html.ActionLink("Continue", "Details", new { id = item.ID }, htmlAttributes: new { @onclick = "return validate()" })
+                </td>
+            </tr>
+        }
+
+    </table>*@
