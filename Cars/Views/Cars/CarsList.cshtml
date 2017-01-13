@@ -4,19 +4,6 @@
     ViewBag.Title = "CarsList";
 }
 
-
-
-@*<script src="~/Scripts/jquery-1.12.4.min.js"></script>*@
-@*<script src="~/Scripts/bootstrap.min.js"></script>*@
-@*<script src="~/Scripts/jquery-ui-1.12.1.min.js"></script>*@
-@*<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>*@
-@*<script src="https://code.jquery.com/jquery-1.12.4.js"></script>*@
-@*@Scripts.Render("~/bundles/jqueryui")*@
-@*<script>
-        $(document).ready(function () {
-            $("#date").datepicker();
-        });
-    </script>*@
 <style>
     .glyphicon {
         margin-right: 5px;
@@ -75,12 +62,9 @@
     }
 </style>
 
+<link href="~/Content/bootstrap-datepicker.css" rel="stylesheet" />
+<script src="~/Scripts/bootstrap-datepicker.js"></script>
 
-<script>
-    $(".input-daterange input").each(function () {
-        $(this).datepicker("clearDates");
-    });
-</script>
 <script>
     function a(carNumber, Id) {
         var items = localStorage.interests;
@@ -92,8 +76,8 @@
         }
     }
     function validate() {
-        var start = document.getElementById("txtStartDate").value;
-        var end = document.getElementById("txtEndDate").value;
+        var start = document.getElementById("startDate").value;
+        var end = document.getElementById("endDate").value;
         if (start == "" && end == "") {
             alert("Dates must be filled");
             return false;
@@ -113,6 +97,12 @@
 
 <script>
     $(document).ready(function () {
+        $('#datepicker').datepicker({
+            format: "dd MM yyyy",
+            todayBtn: "linked",
+            autoclose: true,
+            todayHighlight: true
+        });
         $('#list').click(function (event) {
             event.preventDefault();
             $('#products .item').addClass('list-group-item');
@@ -125,11 +115,12 @@
     });
 </script>
 
+
 <div class="container">
     <div class="well well-sm">
-        <strong>Cars</strong>
-        from:<input type="date" id="txtStartDate" value="" />
-        to:<input type="date" id="txtEndDate" value="" />
+        <strong>Cars</strong><br />
+        @*from:<input type="date" id="txtStartDate" value="" />
+        to:<input type="date" id="txtEndDate" value="" />*@
         <div class="btn-group">
             <a href="#" id="list" class="btn btn-default btn-sm">
                 <span class="glyphicon glyphicon-th-list">
@@ -140,6 +131,14 @@
         </div>
     </div>
 
+
+    <div class="input-daterange input-group" id="datepicker">
+        <span class="input-group-addon">from</span>
+        <input type="text" class="input-sm form-control" name="startDate" id="startDate" placeholder="Start Date" />
+        <span class="input-group-addon">to</span>
+        <input type="text" class="input-sm form-control" name="endDate" id="endDate" placeholder="End Date"  />
+    </div>
+    <br />
 
     <div id="products" class="row list-group">
         @foreach (var item in Model)
@@ -152,8 +151,8 @@
                             @item.ManifacturerName @item.ModelName
                         </h4>
                         @*<p class="group inner list-group-item-text">
-                            Pick up from @item.Store.StoreName
-                        </p>*@
+                                Pick up from @item.Store.StoreName
+                            </p>*@
                         <div class="row">
                             <div class="col-xs-12 col-md-6">
                                 <p class="lead">
