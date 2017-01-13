@@ -60,6 +60,7 @@
     .list-group-item-text {
         margin: 0 0 11px;
     }
+
 </style>
 
 <link href="~/Content/bootstrap-datepicker.css" rel="stylesheet" />
@@ -112,6 +113,7 @@
             $('#products .item').removeClass('list-group-item');
             $('#products .item').addClass('grid-group-item');
         });
+        
     });
 </script>
 
@@ -120,7 +122,7 @@
     <div class="well well-sm">
         <strong>Cars</strong><br />
         @*from:<input type="date" id="txtStartDate" value="" />
-        to:<input type="date" id="txtEndDate" value="" />*@
+            to:<input type="date" id="txtEndDate" value="" />*@
         <div class="btn-group">
             <a href="#" id="list" class="btn btn-default btn-sm">
                 <span class="glyphicon glyphicon-th-list">
@@ -136,10 +138,16 @@
         <span class="input-group-addon">from</span>
         <input type="text" class="input-sm form-control" name="startDate" id="startDate" placeholder="Start Date" />
         <span class="input-group-addon">to</span>
-        <input type="text" class="input-sm form-control" name="endDate" id="endDate" placeholder="End Date"  />
+        <input type="text" class="input-sm form-control" name="endDate" id="endDate" placeholder="End Date" />
     </div>
     <br />
-
+    @using (Html.BeginForm())
+    {
+        <p>
+            Find by name: @Html.TextBox("filter")
+            <input type="submit" value="Search" />
+        </p>
+    }
     <div id="products" class="row list-group">
         @foreach (var item in Model)
         {
@@ -150,9 +158,6 @@
                         <h4 class="group inner list-group-item-heading">
                             @item.ManifacturerName @item.ModelName
                         </h4>
-                        @*<p class="group inner list-group-item-text">
-                                Pick up from @item.Store.StoreName
-                            </p>*@
                         <div class="row">
                             <div class="col-xs-12 col-md-6">
                                 <p class="lead">
@@ -160,8 +165,8 @@
                                 </p>
                             </div>
                             <div class="col-xs-12 col-md-6">
-                                @Html.ActionLink("Continue", "Details", new { id = item.CarTypeID }, htmlAttributes: new { @class = "btn btn-success", @onclick = "return validate()" })
-                                @*<a class="btn btn-success" href="/cars/Detailes">Continue</a>*@
+                                @Html.ActionLink("Continue", "Details", new { id = item.CarTypeID }, 
+                               htmlAttributes: new { @class = "btn btn-success", @onclick = "return validate()" })
                             </div>
                         </div>
                     </div>
@@ -169,6 +174,54 @@
             </div>
         }
     </div>
+
+
+    <nav aria-label="Page navigation">
+        <ul class="pagination">
+            @if (ViewBag.current == 1)
+            {
+                <li class="page-item disabled">
+                    <span class="page-link">Previous</span>
+                </li>
+            }
+            else
+            {
+                <li class="page-item">
+                    <a class="page-link" href="/cars/carslist?skip=@(ViewBag.current-1)">Previous</a>
+                </li>
+            }
+            @for (int i = 1; i < ViewBag.pages + 1; i++)
+            {
+                if (i == ViewBag.current)
+                {
+                    <li class="page-item active">
+                        <span class="page-link">
+                            @i
+                            <span class="sr-only">(current)</span>
+                        </span>
+                    </li>
+                }
+                else
+                {
+                    <li class="page-item"><a class="page-link" href="/cars/carslist?skip=@i">@i</a></li>
+                }
+
+            }
+            @if (ViewBag.current == ViewBag.pages)
+            {
+                <li class="page-item disabled">
+                    <span class="page-link">Next</span>
+                </li>
+            }
+            else
+            {
+                <li class="page-item">
+                    <a class="page-link" href="/cars/carslist?skip=@(ViewBag.current+1)">Next</a>
+                </li>
+            }
+        </ul>
+    </nav>
+
 </div>
 
 

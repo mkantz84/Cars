@@ -56,10 +56,10 @@ namespace Cars.Controllers
             return View(db.Users.ToList());
         }
 
-        public ActionResult CarsList()
+        public ActionResult CarsList(string filter = "", int skip = 1, int take = 3)
         {
             string userId = System.Web.HttpContext.Current.User.Identity.Name;
-
+            List<CarType> carTypes = new List<CarType>();
             if (userId != "")
             {
                 bool isManager = db.Users.FirstOrDefault(t => t.UserID == userId).IsManager;
@@ -73,8 +73,35 @@ namespace Cars.Controllers
             {
                 Cars = cars.Where(t => t.IsAvailable && t.IsProper),
             };
+
+            int carsNum = db.CarTypes.Count();
+
+            switch (filter)
+            {
+                case "":
+                    carTypes = db.CarTypes.
+                        OrderBy(t => t.ManifacturerName).
+                        Skip((skip - 1) * take).
+                        Take(take).
+                        ToList();
+                    break;
+                default:
+                    carTypes = db.CarTypes.
+                        Where(s => s.ManifacturerName.Contains(filter)
+                        || (s.ModelName.Contains(filter))).
+                        OrderBy(t => t.ManifacturerName).ToList();
+                    carsNum = carTypes.Count;
+                    carTypes=carTypes.
+                        Skip((skip - 1) * take).
+                        Take(take).
+                        ToList();
+                    break;
+            }
+            //carsNum = carTypes.Count;
+            ViewBag.current = skip;
+            ViewBag.pages = (carsNum / take) + 1;
             //return View(cars.Where(t => t.IsAvailable && t.IsProper).ToList());
-            return View(db.CarTypes.ToList());
+            return View(carTypes);
         }
 
         public void InitStartDate(DateTime startDate)
@@ -97,8 +124,8 @@ namespace Cars.Controllers
             //Car car = db.Cars.Find(id);
             //car.HireDateStart = start;
             //car.HireDateEnd = end;
-            Car selectedCar=new Car();
-            List<Rental> rentals = 
+            Car selectedCar = new Car();
+            List<Rental> rentals =
                 db.Rentals.Where(t => (t.StartDate > start && t.StartDate < end) || (t.StartDate < start && t.EndDate > start)).ToList();
             List<Car> unavalaibleCars = rentals.Select(t => t.Car).ToList();
             //do
@@ -107,7 +134,7 @@ namespace Cars.Controllers
             //} while (unavalaibleCars.Exists(c => c.ID == selectedCar.ID));
             foreach (var item in db.Cars)
             {
-                if (item.CarTypeID==id)
+                if (item.CarTypeID == id)
                 {
                     selectedCar = item;
                     if (!unavalaibleCars.Exists(c => c.ID == selectedCar.ID))
@@ -116,7 +143,7 @@ namespace Cars.Controllers
                     }
                 }
             }
-            
+
 
             CarType carType = db.CarTypes.Find(id);
             CarInfo carinfo = new CarInfo
