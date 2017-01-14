@@ -17,6 +17,7 @@ namespace Cars.Controllers
         private RentalContext db = new RentalContext();
         private static DateTime start;
         private static DateTime end;
+        private static CarFilter carFilter = new CarFilter();
 
 
         // GET: Cars
@@ -56,7 +57,7 @@ namespace Cars.Controllers
             return View(db.Users.ToList());
         }
 
-        public ActionResult CarsList(string filter = "", int skip = 1, int take = 3)
+        public ActionResult CarsList(int skip = 1, int take = 3)
         {
             string userId = System.Web.HttpContext.Current.User.Identity.Name;
             List<CarType> carTypes = new List<CarType>();
@@ -76,35 +77,70 @@ namespace Cars.Controllers
 
             int carsNum = db.CarTypes.Count();
 
-            switch (filter)
+            carTypes = db.CarTypes.OrderBy(t => t.ManifacturerName).ToList();
+            if (carFilter.Gear != GearType.DEFAULT)
             {
-                case "":
-                    carTypes = db.CarTypes.
-                        OrderBy(t => t.ManifacturerName).
-                        Skip((skip - 1) * take).
-                        Take(take).
-                        ToList();
-                    break;
-                default:
-                    carTypes = db.CarTypes.
-                        Where(s => s.ManifacturerName.Contains(filter)
-                        || (s.ModelName.Contains(filter))).
-                        OrderBy(t => t.ManifacturerName).ToList();
-                    carsNum = carTypes.Count;
-                    carTypes=carTypes.
-                        Skip((skip - 1) * take).
-                        Take(take).
-                        ToList();
-                    break;
+                carTypes = carTypes.
+                    Where(t => t.Gear == carFilter.Gear).
+                    ToList();
             }
+            if (carFilter.Year != 0)
+            {
+                carTypes = carTypes.
+                    Where(w => w.Year == carFilter.Year).
+                    ToList();
+            }
+            if (carFilter.Manifacturer != "" && carFilter.Manifacturer != null)
+            {
+                carTypes = carTypes.
+                    Where(w => w.ManifacturerName == carFilter.Manifacturer).
+                    ToList();
+            }
+            if (carFilter.Model != "" && carFilter.Model != null)
+            {
+                carTypes = carTypes.
+                    Where(w => w.ModelName == carFilter.Model).
+                    ToList();
+            }
+            if (carFilter.FreeText != "" && carFilter.FreeText != null)
+            {
+                carTypes = carTypes.
+                    Where(s => s.ManifacturerName.ToLower().Contains(carFilter.FreeText.ToLower()) 
+                    || (s.ModelName.ToLower().Contains(carFilter.FreeText.ToLower()))).
+                    ToList();
+
+            }
+            carsNum = carTypes.Count;
+            carTypes = carTypes.
+                Skip((skip - 1) * take).
+                Take(take).
+                ToList();
             //carsNum = carTypes.Count;
+            ViewBag.carsNum = carsNum;
             ViewBag.years = db.CarTypes.Select(t => t.Year).Distinct();
             ViewBag.mani = db.CarTypes.Select(t => t.ManifacturerName).Distinct();
             ViewBag.model = db.CarTypes.Select(t => t.ModelName).Distinct();
             ViewBag.current = skip;
-            ViewBag.pages = (carsNum / take) + 1;
+            if (carsNum % take == 0)
+            {
+                ViewBag.pages = (carsNum / take);
+            }
+            else
+            {
+                ViewBag.pages = (carsNum / take) + 1;
+            }
+
             //return View(cars.Where(t => t.IsAvailable && t.IsProper).ToList());
             return View(carTypes);
+        }
+
+        public void InitFilter(GearType filterGear, int filterYear, string manifacturer, string model, string freeText)
+        {
+            carFilter.Gear = filterGear;
+            carFilter.Year = filterYear;
+            carFilter.Manifacturer = manifacturer;
+            carFilter.Model = model;
+            carFilter.FreeText = freeText;
         }
 
         public void InitStartDate(DateTime startDate)

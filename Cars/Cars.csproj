@@ -303,6 +303,7 @@
     <Compile Include="Models\CarData.cs" />
     <Compile Include="Models\CarInfo.cs" />
     <Compile Include="Models\CarType.cs" />
+    <Compile Include="Models\CarFilter.cs" />
     <Compile Include="Models\Rental.cs" />
     <Compile Include="DAL\RentalContext.cs" />
     <Compile Include="Models\Store.cs" />

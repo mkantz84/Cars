@@ -84,7 +84,7 @@
         var splitEnd = end.split("/");
         var secondDate = new Date(splitEnd);
 
-        var diffDays = Math.round(Math.abs((firstDate.getTime() - secondDate.getTime()) / (oneDay)));
+        var diffDays = Math.round(Math.abs((firstDate.getTime() - secondDate.getTime()) / (oneDay))+1);
         var price = $("#price").text();
         var y = diffDays * price;
         document.getElementById("calc").innerHTML = y;

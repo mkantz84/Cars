@@ -101,6 +101,24 @@
         $.post('InitStartDate', { startDate: start });
         $.post('InitEndDate', { endDate: end });
     }
+    function sendFilter() {
+        var gear = $('#slctGear').val();
+        if (gear == null) {
+            gear = "0";
+        }
+        var year = $('#slctYear').val();
+        if (year == null) {
+            year = "0";
+        }
+        var mani = $('#slctMani').val();
+
+        var model = $('#slctModel').val();
+
+        var freeText = $('#txtSearch').val();
+
+        $.post('InitFilter',
+            { filterGear: gear, filterYear: year, manifacturer: mani, model: model, freeText: freeText });
+    }
 </script>
 
 <script>
@@ -121,7 +139,13 @@
             $('#products .item').removeClass('list-group-item');
             $('#products .item').addClass('grid-group-item');
         });
-
+        if (@ViewBag.carsNum==0) {
+            
+            $('#alert').text("The search came back with 0 results");
+        }
+        else {
+            $('#alerti').css("display", "none");
+        }
     });
 
 </script>
@@ -140,7 +164,6 @@
         </div>
     </div>
 
-
     <div class="input-daterange input-group" id="datepicker">
         <span class="input-group-addon">from</span>
         <input type="text" class="input-sm form-control"
@@ -150,63 +173,72 @@
                name="endDate" id="endDate" placeholder="End Date" />
     </div>
     <br />
-    @*@using (Html.BeginForm())
-        {
-            <p>
-                Free text: @Html.TextBox("filter")
-                <input type="submit" value="Search" />
 
-            </p>
-        }*@
     <table style="width: 100%; margin-left: auto; margin-right: auto;">
         <tbody>
             <tr>
                 <td>
                     <div style='width:70%; margin-left:0%'>
-                        <select class="form-control" id="slctGear">
-                            <option selected="selected" value="">Gear</option>
-                            <option value="0">MANUAL</option>
-                            <option value="1">AUTOMATIC</option>
+                        <select class="form-control" id="slctGear" oninput="sendFilter()">
+                            <option disabled selected hidden>Gear</option>
+                            <option value="0">ALL</option>
+                            <option value="1">MANUAL</option>
+                            <option value="2">AUTOMATIC</option>
                         </select>
                     </div>
                 </td>
                 <td>
                     <div style='width:70%; margin-left:0%'>
-                        <select class="form-control" id="slctYear">
-                            <option selected="selected" value="">Year</option>
+                        <select class="form-control" id="slctYear" oninput="sendFilter()">
+                            <option disabled selected hidden>Year</option>
+                            <option value="0">ALL</option>
                             @foreach (var item in ViewBag.years)
                             {
-                                <option value="@item">@item</option>
+                            <option value="@item">@item</option>
                             }
                         </select>
                     </div>
                 </td>
                 <td>
                     <div style='width:70%; margin-left:0%'>
-                        <select class="form-control" id="slctMani">
-                            <option selected="selected" value="">Manifacturer</option>
+                        <select class="form-control" id="slctMani" oninput="sendFilter()">
+                            <option value="" disabled selected hidden>Manifacturer</option>
+                            <option value="">ALL</option>
                             @foreach (var item in ViewBag.mani)
                             {
-                                <option value="@item">@item</option>
+                            <option value="@item">@item</option>
                             }
                         </select>
                     </div>
                 </td>
                 <td>
                     <div style='width:70%; margin-left:0%'>
-                        <select class="form-control" id="slctModel">
-                            <option selected="selected" value="">Model</option>
+                        <select class="form-control" id="slctModel" oninput="sendFilter()">
+                            <option value="" disabled selected hidden>Model</option>
+                            <option value="">ALL</option>
                             @foreach (var item in ViewBag.model)
                             {
-                                <option value="@item">@item</option>
+                            <option value="@item">@item</option>
                             }
                         </select>
                     </div>
                 </td>
-                <td style="width:120px">
-                    <div style='width:70%; margin-left:0%'>
+            </tr>
+        </tbody>
+    </table>
+
+    <table style="width: 100%; margin-left: 0%; margin-top: 15px;">
+        <tbody>
+            <tr>
+                <td>
+                    <div style='width:100%; margin-left:0%'>
+                        <input type="text" class="form-control" id="txtSearch" name="txtSearch" placeholder="Free text" value="" onblur="sendFilter()" />
+                    </div>
+                </td>
+                <td>
+                    <div style='width:77%; margin-right:0%'>
                         <a href="CarsList">
-                            <input type="button" class="btn btn-group-justified" name="name" value="search" onclick="a()" />
+                            <input type="button" class="btn btn-group-justified" name="name" value="search" />
                         </a>
                     </div>
                 </td>
@@ -214,28 +246,11 @@
         </tbody>
     </table>
 
-    <table style="width: 40%; margin-left: 0%; margin-top: 15px;">
-        <tbody>
-            <tr>
-                <td>
-                    <div style='width:100%; margin-left:0%'>
-                        <input type="text" class="form-control" id="txtSearch" name="txtSearch" placeholder="Free text" value="" />
-                    </div>
-                </td>
-                <td>
-                    <div style='width:100%; margin-left:0%'>
-                        <a href="CarsList">
-                            <input type="button" class="btn btn-group-justified" name="name" value="search" onclick="b()" />
-                        </a>                        
-                    </div>
-                </td>
-            </tr>
-        </tbody>
-    </table>
-
-
     <br />
     <div id="products" class="row list-group">
+        <div class="alert alert-warning" id="alerti">
+            <strong id="alert"></strong>
+        </div>
         @foreach (var item in Model)
             {
             <div class="item  col-xs-4 col-lg-4">

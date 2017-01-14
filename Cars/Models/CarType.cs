@@ -8,6 +8,7 @@ namespace Cars.Models
 {
     public enum GearType
     {
+        DEFAULT,
         MANUAL,
         AUTOMATIC,
     }
