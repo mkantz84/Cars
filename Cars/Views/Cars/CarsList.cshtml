@@ -61,6 +61,13 @@
         margin: 0 0 11px;
     }
 
+    /*a.a-btn {
+        display: block;
+        width: 100px;
+        height:30px;
+        align-content:center;
+        background-color:lightgrey
+    }*/
 </style>
 
 <link href="~/Content/bootstrap-datepicker.css" rel="stylesheet" />
@@ -99,6 +106,7 @@
 <script>
     $(document).ready(function () {
         $('#datepicker').datepicker({
+            startDate: "today",
             format: "dd MM yyyy",
             todayBtn: "linked",
             autoclose: true,
@@ -113,16 +121,15 @@
             $('#products .item').removeClass('list-group-item');
             $('#products .item').addClass('grid-group-item');
         });
-        
+
     });
+
 </script>
 
 
 <div class="container">
     <div class="well well-sm">
         <strong>Cars</strong><br />
-        @*from:<input type="date" id="txtStartDate" value="" />
-            to:<input type="date" id="txtEndDate" value="" />*@
         <div class="btn-group">
             <a href="#" id="list" class="btn btn-default btn-sm">
                 <span class="glyphicon glyphicon-th-list">
@@ -136,21 +143,101 @@
 
     <div class="input-daterange input-group" id="datepicker">
         <span class="input-group-addon">from</span>
-        <input type="text" class="input-sm form-control" name="startDate" id="startDate" placeholder="Start Date" />
+        <input type="text" class="input-sm form-control"
+               name="startDate" id="startDate" placeholder="Start Date" />
         <span class="input-group-addon">to</span>
-        <input type="text" class="input-sm form-control" name="endDate" id="endDate" placeholder="End Date" />
+        <input type="text" class="input-sm form-control"
+               name="endDate" id="endDate" placeholder="End Date" />
     </div>
     <br />
-    @using (Html.BeginForm())
-    {
-        <p>
-            Find by name: @Html.TextBox("filter")
-            <input type="submit" value="Search" />
-        </p>
-    }
+    @*@using (Html.BeginForm())
+        {
+            <p>
+                Free text: @Html.TextBox("filter")
+                <input type="submit" value="Search" />
+
+            </p>
+        }*@
+    <table style="width: 100%; margin-left: auto; margin-right: auto;">
+        <tbody>
+            <tr>
+                <td>
+                    <div style='width:70%; margin-left:0%'>
+                        <select class="form-control" id="slctGear">
+                            <option selected="selected" value="">Gear</option>
+                            <option value="0">MANUAL</option>
+                            <option value="1">AUTOMATIC</option>
+                        </select>
+                    </div>
+                </td>
+                <td>
+                    <div style='width:70%; margin-left:0%'>
+                        <select class="form-control" id="slctYear">
+                            <option selected="selected" value="">Year</option>
+                            @foreach (var item in ViewBag.years)
+                            {
+                                <option value="@item">@item</option>
+                            }
+                        </select>
+                    </div>
+                </td>
+                <td>
+                    <div style='width:70%; margin-left:0%'>
+                        <select class="form-control" id="slctMani">
+                            <option selected="selected" value="">Manifacturer</option>
+                            @foreach (var item in ViewBag.mani)
+                            {
+                                <option value="@item">@item</option>
+                            }
+                        </select>
+                    </div>
+                </td>
+                <td>
+                    <div style='width:70%; margin-left:0%'>
+                        <select class="form-control" id="slctModel">
+                            <option selected="selected" value="">Model</option>
+                            @foreach (var item in ViewBag.model)
+                            {
+                                <option value="@item">@item</option>
+                            }
+                        </select>
+                    </div>
+                </td>
+                <td style="width:120px">
+                    <div style='width:70%; margin-left:0%'>
+                        <a href="CarsList">
+                            <input type="button" class="btn btn-group-justified" name="name" value="search" onclick="a()" />
+                        </a>
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+
+    <table style="width: 40%; margin-left: 0%; margin-top: 15px;">
+        <tbody>
+            <tr>
+                <td>
+                    <div style='width:100%; margin-left:0%'>
+                        <input type="text" class="form-control" id="txtSearch" name="txtSearch" placeholder="Free text" value="" />
+                    </div>
+                </td>
+                <td>
+                    <div style='width:100%; margin-left:0%'>
+                        <a href="CarsList">
+                            <input type="button" class="btn btn-group-justified" name="name" value="search" onclick="b()" />
+                        </a>                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+
+
+    <br />
     <div id="products" class="row list-group">
         @foreach (var item in Model)
-        {
+            {
             <div class="item  col-xs-4 col-lg-4">
                 <div class="thumbnail">
                     <img style="max-height:150px;" class="group list-group-image" src=@item.picture alt="@item.ModelName picture" />
@@ -165,7 +252,7 @@
                                 </p>
                             </div>
                             <div class="col-xs-12 col-md-6">
-                                @Html.ActionLink("Continue", "Details", new { id = item.CarTypeID }, 
+                                @Html.ActionLink("Continue", "Details", new { id = item.CarTypeID },
                                htmlAttributes: new { @class = "btn btn-success", @onclick = "return validate()" })
                             </div>
                         </div>

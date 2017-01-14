@@ -98,6 +98,9 @@ namespace Cars.Controllers
                     break;
             }
             //carsNum = carTypes.Count;
+            ViewBag.years = db.CarTypes.Select(t => t.Year).Distinct();
+            ViewBag.mani = db.CarTypes.Select(t => t.ManifacturerName).Distinct();
+            ViewBag.model = db.CarTypes.Select(t => t.ModelName).Distinct();
             ViewBag.current = skip;
             ViewBag.pages = (carsNum / take) + 1;
             //return View(cars.Where(t => t.IsAvailable && t.IsProper).ToList());
