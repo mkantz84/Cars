@@ -4,83 +4,67 @@
     ViewBag.Title = "Details";
 }
 
+<script>
+    $(document).ready(function () {
+        if (@ViewBag.carNumber==0) {
+            $('#alert').text("The car is not available. try to pick other dates");
+            $('#alerti').toggle();
+        }
+        else {
+            $("#info").toggle();
+        }
+    });
+
+</script>
 
 <h2>Details</h2>
-    <div >
-        <h4>Car</h4>
-        <hr />
-        <dl class="dl-horizontal">
-            <dt >
-                @Html.DisplayNameFor(model => model.HireDateStart)
-            </dt>
-            <dd id="start">
-                @Html.DisplayFor(model => model.HireDateStart)
-            </dd>
-            <dt>
-                @Html.DisplayNameFor(model => model.HireDateEnd)
-            </dt>
-            <dd id="end">
-                @Html.DisplayFor(model => model.HireDateEnd)
-            </dd>
-            <dt>
-                @Html.DisplayNameFor(model => model.Car.CarType.ModelName)
-            </dt>
+<div>
+    <div id="products" class="row list-group">
+        <div class="alert alert-warning" id="alerti" style="display:none">
+            <strong id="alert"></strong>
+        </div>
 
-            <dd>
-                @Html.DisplayFor(model => model.Car.CarType.ModelName)
-            </dd>
-
-            <dt>
-                @Html.DisplayNameFor(model => model.Car.Store.StoreName)
-            </dt>
-
-            <dd>
-                @Html.DisplayFor(model => model.Car.Store.StoreName)
-            </dd>
-
-            <dt>
-                @Html.DisplayNameFor(model => model.Car.Kilometer)
-            </dt>
-
-            <dd>
-                @Html.DisplayFor(model => model.Car.Kilometer)
-            </dd>
-
-            <dt>
-                @Html.DisplayNameFor(model => model.CarType.DailyPrice)
-            </dt>
-
-            <dd id="price">
-                @Html.DisplayFor(model => model.CarType.DailyPrice)
-            </dd>
-
-            <dt>
-                @Html.DisplayNameFor(model => model.CarType.LateDayPrice)
-            </dt>
-
-            <dd>
-                @Html.DisplayFor(model => model.CarType.LateDayPrice)
-            </dd>
-
-            <dt>
-                Total price
-            </dt>
-
-            <dd id="calc" >
-                
-            </dd>
-
-        </dl>
+        <div class="item  col-xs-4 col-lg-4" id="info" style="display:none">
+            <div class="thumbnail">
+                <img style="max-height:150px;" class="group list-group-image" src=@Model.CarType.picture alt="@Model.CarType.ModelName picture" />
+                <div class="caption">
+                    <h4 class="group inner list-group-item-heading">
+                        @Model.CarType.ManifacturerName @Model.CarType.ModelName
+                    </h4>
+                    <p>
+                        <span id="start">@Html.DisplayFor(model => model.HireDateStart)</span> - <span id="end">@Html.DisplayFor(model => model.HireDateEnd)</span><br />
+                        Pick up from @Html.DisplayFor(model => model.Car.Store.StoreName)<br />
+                        Daily price: <span id="price">@Html.DisplayFor(model => model.CarType.DailyPrice)</span>$<br />
+                        Late day price: @Html.DisplayFor(model => model.CarType.LateDayPrice)$<br />
+                        @*Total price: <span id="calc"></span>$*@
+                    </p>
+                    <div class="row">
+                        <div class="col-xs-12 col-md-6">
+                            <p class="lead">
+                                Total price: <span id="calc"></span>$
+                            </p>
+                        </div>
+                        <div  class="col-xs-12 col-md-6">
+                            <br />
+                            @Html.ActionLink("Continue", "Purchase", new { id = Model.Car.ID }, htmlAttributes: new { @class = "btn btn-primary", @id = "continue"})
+                            @*<br />
+                            @Html.ActionLink("Back to List", "CarsList",new { }, htmlAttributes: new { @class = "btn btn-default", @style = "margin-top:10px" })*@
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
+</div>
 <script>
     function a() {
         var oneDay = 24 * 60 * 60 * 1000; // hours*minutes*seconds*milliseconds
 
-        var start = $("#start").text(); 
+        var start = $("#start").text();
         var splitStart = start.split("/");
         var firstDate = new Date(splitStart);
 
-        var end = $("#end").text(); 
+        var end = $("#end").text();
         var splitEnd = end.split("/");
         var secondDate = new Date(splitEnd);
 
@@ -92,6 +76,5 @@
     a();
 </script>
 <p>
-    @Html.ActionLink("Back to List", "CarsList")
-    @Html.ActionLink("Continue", "Purchase", new { id = Model.Car.ID } )
+    @Html.ActionLink("Back to List", "CarsList", new { }, htmlAttributes: new { @class = "btn btn-default", @style = "margin-top:10px" })
 </p>

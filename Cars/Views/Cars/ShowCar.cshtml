@@ -1,7 +1,7 @@
-﻿@model IEnumerable<Cars.Models.CarType>
+﻿@model Cars.Models.CarType
 
 @{
-    ViewBag.Title = "CarsList";
+    ViewBag.Title = "ShowCar";
 }
 
 <style>
@@ -74,53 +74,45 @@
 <script src="~/Scripts/bootstrap-datepicker.js"></script>
 
 <script>
-    //function a(carNumber, Id) {
-    //    var items = localStorage.interests;
-    //    if (localStorage.interests == null) {
-    //        localStorage.interests = carNumber;
-    //    }
-    //    else if (!items.includes(carNumber)) {
-    //        localStorage.interests += "," + carNumber;
-    //    }
-    //}
+
     function validate(manifacturer, model) {
         var start = document.getElementById("startDate").value;
         var end = document.getElementById("endDate").value;
         if (start == "" && end == "") {
-            $("#startDate").css("borderColor","red");
-            $("#endDate").css("borderColor","red");
+            $("#startDate").css("borderColor", "red");
+            $("#endDate").css("borderColor", "red");
             $("#startDate").popover({
                 title: 'Warning!',
                 content: 'date must be filled',
-                placement: 'bottom'                
+                placement: 'bottom'
             }).popover('show');
             return false;
         }
         else if (start == "") {
-            $("#startDate").css("borderColor","red");
+            $("#startDate").css("borderColor", "red");
             $("#startDate").popover({
                 title: 'Warning!',
                 content: 'date must be filled',
-                placement: 'bottom'                
+                placement: 'bottom'
             }).popover('show');
             return false;
         }
         else if (end == "") {
-            $("#endDate").css("borderColor","red");
+            $("#endDate").css("borderColor", "red");
             $("#endDate").popover({
                 title: 'Warning!',
                 content: 'date must be filled',
-                placement: 'bottom'                
+                placement: 'bottom'
             }).popover('show');
             return false;
         }
 
         var items = localStorage.interests;
         if (localStorage.interests == null) {
-            localStorage.interests = manifacturer+" "+model;
+            localStorage.interests = manifacturer + " " + model;
         }
-        else if (!items.includes(manifacturer+" "+model)) {
-            localStorage.interests += "," + manifacturer+" "+model;
+        else if (!items.includes(manifacturer + " " + model)) {
+            localStorage.interests += "," + manifacturer + " " + model;
         }
 
 
@@ -165,16 +157,11 @@
             $('#products .item').removeClass('list-group-item');
             $('#products .item').addClass('grid-group-item');
         });
-        if (@ViewBag.carsNum==0) {
-            $('#alert').text("The search came back with 0 results");
-            $('#alerti').toggle();
-        }
         $("#startDate").change(function () {
-            $("#startDate").css("borderColor","green").popover('disable');
-            $("#endDate").css("borderColor","green")
+            $("#startDate").css("borderColor", "green").popover('disable');
+            $("#endDate").css("borderColor", "green")
         });
     });
-    
 
 </script>
 
@@ -192,7 +179,7 @@
         </div>
     </div>
 
-    <div class="input-daterange input-group" id="datepicker" >
+    <div class="input-daterange input-group" id="datepicker">
         <span class="input-group-addon">from</span>
         <input type="text" class="input-sm form-control"
                name="startDate" id="startDate" placeholder="Start Date" />
@@ -222,7 +209,7 @@
                             <option value="0">ALL</option>
                             @foreach (var item in ViewBag.years)
                             {
-                            <option value="@item">@item</option>
+                                <option value="@item">@item</option>
                             }
                         </select>
                     </div>
@@ -234,7 +221,7 @@
                             <option value="">ALL</option>
                             @foreach (var item in ViewBag.mani)
                             {
-                            <option value="@item">@item</option>
+                                <option value="@item">@item</option>
                             }
                         </select>
                     </div>
@@ -246,7 +233,7 @@
                             <option value="">ALL</option>
                             @foreach (var item in ViewBag.model)
                             {
-                            <option value="@item">@item</option>
+                                <option value="@item">@item</option>
                             }
                         </select>
                     </div>
@@ -276,127 +263,28 @@
 
     <br />
     <div id="products" class="row list-group">
-        <div class="alert alert-warning" id="alerti" style="display:none">
-            <strong id="alert"></strong>
-        </div>
-        @foreach (var item in Model)
-            {
-            <div class="item  col-xs-4 col-lg-4">
-                <div class="thumbnail">
-                    <img style="max-height:150px;" class="group list-group-image" src=@item.picture alt="@item.ModelName picture" />
-                    <div class="caption">
-                        <h4 class="group inner list-group-item-heading">
-                            @item.ManifacturerName @item.ModelName
-                        </h4>
-                        <div class="row">
-                            <div class="col-xs-12 col-md-6">
-                                <p class="lead">
-                                    $@item.DailyPrice per day
-                                </p>
-                            </div>
-                            <div class="col-xs-12 col-md-6">
-                                @Html.ActionLink("Continue", "Details", new { id = item.CarTypeID },
-                               htmlAttributes: new { @class = "btn btn-primary", @onclick = "return validate('"+item.ManifacturerName+"','"+item.ModelName+"')" })
-                            </div>
+        <div class="item  col-xs-4 col-lg-4">
+            <div class="thumbnail">
+                <img style="max-height:150px;" class="group list-group-image" src=@Model.picture alt="@Model.ModelName picture" />
+                <div class="caption">
+                    <h4 class="group inner list-group-item-heading">
+                        @Model.ManifacturerName @Model.ModelName
+                    </h4>
+                    <div class="row">
+                        <div class="col-xs-12 col-md-6">
+                            <p class="lead">
+                                $@Model.DailyPrice per day
+                            </p>
+                        </div>
+                        <div class="col-xs-12 col-md-6">
+                            @Html.ActionLink("Continue", "Details", new { id = Model.CarTypeID },
+                               htmlAttributes: new { @class = "btn btn-primary", @onclick = "return validate('" + Model.ManifacturerName + "','" + Model.ModelName + "')" })
                         </div>
                     </div>
                 </div>
             </div>
-        }
+        </div>
     </div>
-
-
-    <nav aria-label="Page navigation">
-        <ul class="pagination">
-            @if (ViewBag.current == 1)
-            {
-            <li class="page-item disabled">
-                <span class="page-link">Previous</span>
-            </li>
-            }
-            else
-            {
-            <li class="page-item">
-                <a class="page-link" href="/cars/carslist?skip=@(ViewBag.current-1)">Previous</a>
-            </li>
-            }
-            @for (int i = 1; i < ViewBag.pages + 1; i++)
-            {
-                if (i == ViewBag.current)
-                {
-            <li class="page-item active">
-                <span class="page-link">
-                    @i
-                    <span class="sr-only">(current)</span>
-                </span>
-            </li>
-                }
-                else
-                {
-            <li class="page-item"><a class="page-link" href="/cars/carslist?skip=@i">@i</a></li>
-                }
-
-            }
-            @if (ViewBag.current == ViewBag.pages)
-            {
-            <li class="page-item disabled">
-                <span class="page-link">Next</span>
-            </li>
-            }
-            else
-            {
-            <li class="page-item">
-                <a class="page-link" href="/cars/carslist?skip=@(ViewBag.current+1)">Next</a>
-            </li>
-            }
-        </ul>
-    </nav>
-
 </div>
 
 
-
-
-@*<h2>CarsList</h2>
-        Start Date:
-        from:<input type="date" id="txtStartDate" value="" />
-        to:<input type="date" id="txtEndDate" value="" />
-    <table class="table">
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.CarType.ModelName)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Store.StoreName)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.CarNumber)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Kilometer)
-            </th>
-            <th></th>
-        </tr>
-
-        @foreach (var item in Model)
-        {
-            <tr>
-                <td>
-                    @Html.DisplayFor(modelItem => item.CarType.ModelName)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Store.StoreName)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.CarNumber)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Kilometer)
-                </td>
-                <td onclick="a(@item.CarNumber)">
-                    @Html.ActionLink("Continue", "Details", new { id = item.ID }, htmlAttributes: new { @onclick = "return validate()" })
-                </td>
-            </tr>
-        }
-
-    </table>*@

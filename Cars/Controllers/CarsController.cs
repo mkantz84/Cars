@@ -57,6 +57,16 @@ namespace Cars.Controllers
             return View(db.Users.ToList());
         }
 
+        public ActionResult ShowCar(string manifacturer, string model)
+        {
+            ViewBag.years = db.CarTypes.Select(t => t.Year).Distinct();
+            ViewBag.mani = db.CarTypes.Select(t => t.ManifacturerName).Distinct();
+            ViewBag.model = db.CarTypes.Select(t => t.ModelName).Distinct();
+            CarType carType = db.CarTypes.FirstOrDefault
+                (t => t.ManifacturerName == manifacturer && t.ModelName == model);
+            return View(carType);
+        }
+
         public ActionResult CarsList(int skip = 1, int take = 3)
         {
             string userId = System.Web.HttpContext.Current.User.Identity.Name;
@@ -160,17 +170,10 @@ namespace Cars.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            //Car car = db.Cars.Find(id);
-            //car.HireDateStart = start;
-            //car.HireDateEnd = end;
             Car selectedCar = new Car();
             List<Rental> rentals =
                 db.Rentals.Where(t => (t.StartDate > start && t.StartDate < end) || (t.StartDate < start && t.EndDate > start)).ToList();
             List<Car> unavalaibleCars = rentals.Select(t => t.Car).ToList();
-            //do
-            //{
-            //    selectedCar = db.Cars.FirstOrDefault(t => t.CarTypeID == id);  //t.ID != unavalaibleCars.Find(t.ID).ID);
-            //} while (unavalaibleCars.Exists(c => c.ID == selectedCar.ID));
             foreach (var item in db.Cars)
             {
                 if (item.CarTypeID == id)
@@ -183,7 +186,7 @@ namespace Cars.Controllers
                 }
             }
 
-
+            ViewBag.carNumber = selectedCar.CarNumber;
             CarType carType = db.CarTypes.Find(id);
             CarInfo carinfo = new CarInfo
             {
