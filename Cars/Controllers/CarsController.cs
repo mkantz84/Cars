@@ -23,6 +23,7 @@ namespace Cars.Controllers
         // GET: Cars
         public ActionResult Index()
         {
+
             string id = System.Web.HttpContext.Current.User.Identity.Name;
             if (id != "")
             {
@@ -172,15 +173,16 @@ namespace Cars.Controllers
             }
             Car selectedCar = new Car();
             List<Rental> rentals =
-                db.Rentals.Where(t => (t.StartDate > start && t.StartDate < end) || (t.StartDate < start && t.EndDate > start)).ToList();
+                db.Rentals.Where(t => (t.StartDate >= start && t.StartDate <= end) || (t.StartDate <= start && t.EndDate >= start)).ToList();
             List<Car> unavalaibleCars = rentals.Select(t => t.Car).ToList();
             foreach (var item in db.Cars)
             {
                 if (item.CarTypeID == id)
                 {
                     selectedCar = item;
-                    if (!unavalaibleCars.Exists(c => c.ID == selectedCar.ID))
+                    if (unavalaibleCars.Exists(c => c.ID == selectedCar.ID))
                     {
+                        selectedCar.CarNumber = 0;
                         break;
                     }
                 }
@@ -235,7 +237,7 @@ namespace Cars.Controllers
         }
 
         [Authorize]
-        public ActionResult Purchases()
+        public ActionResult Purchases(int skip = 1, int take = 3)
         {
             string userId = System.Web.HttpContext.Current.User.Identity.Name;
             //int userId = db.Users.FirstOrDefault(t => t.UserName == name).UserID;
@@ -244,6 +246,23 @@ namespace Cars.Controllers
             //    return View("ManagerOrdersList");
             //}
             List<Rental> rentals = db.Rentals.Where(t => t.UserId == userId).ToList();
+
+            int carsNum = rentals.Count;
+            rentals = rentals.
+                Skip((skip - 1) * take).
+                Take(take).
+                ToList();
+            ViewBag.carsNum = carsNum;
+            ViewBag.current = skip;
+            if (carsNum % take == 0)
+            {
+                ViewBag.pages = (carsNum / take);
+            }
+            else
+            {
+                ViewBag.pages = (carsNum / take) + 1;
+            }
+
             return View(rentals);
         }
 
@@ -368,6 +387,7 @@ namespace Cars.Controllers
                 }
                 return Redirect("/cars/index");
             }
+            ViewBag.fromCreate = "trueee";
             return View();
         }
 

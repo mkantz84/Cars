@@ -13,14 +13,19 @@
 
     <script>
         $(document).ready(function () {
-            var authid = "@User.Identity.Name"
+            var authid = "@User.Identity.Name";
+            var authrole = "@Session["authrole"]";
+
             if (authid == "") {
                 $("#notsigned").show();
             }
             else {
                 $("#signed").show();
             }
-            var items=localStorage.interests.toString().split(",");
+            if (authrole != "" && authrole != "Customer") {
+                $("#workers").show();
+            }
+            var items = localStorage.interests.toString().split(",");
             for (var i = 0; i < items.length; i++) {
                 var car = items[i].split(" ");
                 $("#ftr").append
@@ -95,7 +100,7 @@
                         </a>
                         <ul class="dropdown-menu">
                             <li><a href="/cars/purchases">MY PURCHASES</a></li>
-                            <li><a href="/cars/workers">WORKERS ACTIONS</a></li>
+                            <li id="workers" hidden="hidden"><a href="/cars/workers">WORKERS ACTIONS</a></li>
                             <li role="separator" class="divider"></li>
                             <li><a href="/cars/logout">Logout</a></li>
                         </ul>
@@ -108,7 +113,7 @@
     <div class="container body-content">
         @RenderBody()
         <hr />
-        <footer >
+        <footer>
             History:
             <p id="ftr"></p>
         </footer>

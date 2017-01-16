@@ -4,46 +4,75 @@
     ViewBag.Title = "Purchases";
 }
 
-<h2>Purchases</h2>
+<h2>Purchase history</h2>
+<div class="container">
+    <div id="products" class="row list-group">
+        <div class="alert alert-warning" id="alerti" style="display:none">
+            <strong id="alert"></strong>
+        </div>
+        @foreach (var item in Model)
+            {
+            <div class="item  col-xs-4 col-lg-4">
+                <div class="thumbnail">
+                    <img style="max-height:150px;" class="group list-group-image" src=@item.Car.CarType.picture alt="@item.Car.CarType.ModelName picture" />
+                    <div class="caption">
+                        <h4 class="group inner list-group-item-heading">
+                            @item.Car.CarType.ManifacturerName @item.Car.CarType.ModelName
+                        </h4>
+                        <p>
+                            From:   @Html.DisplayFor(modelItem => item.StartDate)<br />
+                            To:     @Html.DisplayFor(modelItem => item.EndDate)
+                        </p>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
 
-<table class="table">
-    <tr>
-        <th>
-            @Html.DisplayNameFor(model => model.User.FullName)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.CarNumber)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.StartDate)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.EndDate)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.ReturningDate)
-        </th>
-        <th></th>
-    </tr>
+    <nav aria-label="Page navigation">
+        <ul class="pagination">
+            @if (ViewBag.current == 1)
+            {
+                <li class="page-item disabled">
+                    <span class="page-link">Previous</span>
+                </li>
+            }
+            else
+            {
+                <li class="page-item">
+                    <a class="page-link" href="/cars/Purchases?skip=@(ViewBag.current-1)">Previous</a>
+                </li>
+            }
+            @for (int i = 1; i < ViewBag.pages + 1; i++)
+            {
+                if (i == ViewBag.current)
+                {
+                    <li class="page-item active">
+                        <span class="page-link">
+                            @i
+                            <span class="sr-only">(current)</span>
+                        </span>
+                    </li>
+                }
+                else
+                {
+                    <li class="page-item"><a class="page-link" href="/cars/Purchases?skip=@i">@i</a></li>
+                }
 
-@foreach (var item in Model) {
-    <tr>
-        <td>
-            @Html.DisplayFor(modelItem => item.User.FullName)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.CarNumber)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.StartDate)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.EndDate)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.ReturningDate)
-        </td>
-    </tr>
-}
+            }
+            @if (ViewBag.current == ViewBag.pages)
+            {
+                <li class="page-item disabled">
+                    <span class="page-link">Next</span>
+                </li>
+            }
+            else
+            {
+                <li class="page-item">
+                    <a class="page-link" href="/cars/Purchases?skip=@(ViewBag.current+1)">Next</a>
+                </li>
+            }
+        </ul>
+    </nav>
 
-</table>
+</div>
