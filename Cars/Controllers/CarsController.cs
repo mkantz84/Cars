@@ -297,7 +297,7 @@ namespace Cars.Controllers
             return View(db.Cars.ToList());
         }
 
-        public ActionResult returning(string userId, int carNumber)
+        public ActionResult returning(string userId, int carNumber=0)
         {
             Rental rental = db.Rentals.FirstOrDefault(t => t.UserId == userId && t.CarNumber == carNumber);
             if (rental != null)
@@ -307,7 +307,7 @@ namespace Cars.Controllers
                 ViewBag.latePrice = carType.LateDayPrice;
                 return View(rental);
             }
-            return Redirect("/cars/employees");
+            return Redirect("/cars/employee");
 
         }
 

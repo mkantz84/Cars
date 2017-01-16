@@ -19,7 +19,7 @@
         var splitRet = ret.split("/");
         var returnDate = new Date(splitRet);
 
-        var diffDays = Math.round(Math.abs((firstDate.getTime() - secondDate.getTime()) / (oneDay)));
+        var diffDays = Math.round(Math.abs((firstDate.getTime() - secondDate.getTime()) / (oneDay)))+1;
         var lateDiffDays = Math.round(Math.abs((secondDate.getTime() - returnDate.getTime()) / (oneDay)));
         document.getElementById("late").innerHTML = lateDiffDays;
 
@@ -30,55 +30,144 @@
         document.getElementById("total").innerHTML = totalPay;
     }
 </script>
-<h2>returning</h2>
+<h2>returning a car</h2>
 
 @using (Html.BeginForm())
 {
     @Html.AntiForgeryToken()
 
-    <div class="form-horizontal">
-        <h4>Rental</h4>
-        <div>
-            <hr />
-            <dl class="dl-horizontal">
-                <dt>
-                    @Html.DisplayNameFor(model => model.UserId)
-                </dt>
-                <dd>
-                    @Html.DisplayFor(model => model.UserId)
-                </dd>
-                <dt>
-                    @Html.DisplayNameFor(model => model.CarNumber)
-                </dt>
-                <dd>
-                    @Html.DisplayFor(model => model.CarNumber)
-                </dd>
-                <dt>
-                    @Html.DisplayNameFor(model => model.StartDate)
-                </dt>
-                <dd id="start">
-                    @Html.DisplayFor(model => model.StartDate)
-                </dd>
-                <dt>
-                    @Html.DisplayNameFor(model => model.EndDate)
-                </dt>
-                <dd id="end">
-                    @Html.DisplayFor(model => model.EndDate)
-                </dd>
-                <dt>
-                    Price per day
-                </dt>
-                <dd>
-                    @ViewBag.dailyPrice
-                </dd>
-                <dt>
-                    Price per day late
-                </dt>
-                <dd>
-                    @ViewBag.latePrice
-                </dd>
-            </dl>
+
+    <div class="container">
+        <div id="products" class="row list-group">
+            <div class="alert alert-warning" id="alerti" style="display:none">
+                <strong id="alert"></strong>
+            </div>
+
+            <div class="item  col-xs-4 col-lg-4">
+                <div class="thumbnail" style="display:inline-block">
+                    <img style="max-height:150px;" class="group list-group-image" src=@Model.Car.CarType.picture alt="@Model.Car.CarType.ModelName picture" />
+                    <div class="caption">
+                        <h4 class="group inner list-group-item-heading">
+                            @Model.Car.CarType.ManifacturerName @Model.Car.CarType.ModelName
+                        </h4>
+                        <p>
+                            <dl class="dl-horizontal">
+                                <dt style="width:unset">
+                                    @Html.DisplayNameFor(model => model.UserId)
+                                </dt>
+                                <dd>
+                                    @Html.DisplayFor(model => model.UserId)
+                                </dd>
+                                <dt style="width:unset">
+                                    @Html.DisplayNameFor(model => model.CarNumber)
+                                </dt>
+                                <dd>
+                                    @Html.DisplayFor(model => model.CarNumber)
+                                </dd>
+                                <dt style="width:unset">
+                                    @Html.DisplayNameFor(model => model.StartDate)
+                                </dt>
+                                <dd id="start">
+                                    @Html.DisplayFor(model => model.StartDate)
+                                </dd>
+                                <dt style="width:unset">
+                                    @Html.DisplayNameFor(model => model.EndDate)
+                                </dt>
+                                <dd id="end">
+                                    @Html.DisplayFor(model => model.EndDate)
+                                </dd>
+                                <dt style="width:unset">
+                                    Price per day
+                                </dt>
+                                <dd>
+                                    @ViewBag.dailyPrice
+                                </dd>
+                                <dt style="width:unset">
+                                    Price per day late
+                                </dt>
+                                <dd>
+                                    @ViewBag.latePrice
+                                </dd>
+                                <dt style="width:unset">
+                                    @Html.LabelFor(model => model.ReturningDate):
+                                </dt>
+                                <dt style="float:right">
+                                    @Html.EditorFor(model => model.ReturningDate, new { htmlAttributes = new { @class = "form-control", @id = "return", @onchange = "a()" } })
+                                </dt><dd></dd>
+                                <dt style="width:unset">
+                                    Number of days late
+                                </dt>
+                                <dd id="late">
+
+                                </dd>
+
+                                <dt style="width:unset">
+                                    Total to pay
+                                </dt>
+                                <dd id="total">
+
+                                </dd>
+                                @*@Html.LabelFor(model => model.ReturningDate, htmlAttributes: new { @class = "control-label col-md-2" })
+                                    @Html.EditorFor(model => model.ReturningDate, new { htmlAttributes = new { @class = "form-control", @id = "return", @onchange = "a()" } })*@
+                            </dl>
+                        </p>
+                        <div class="row">
+                            <div class="col-sm-6 col-sm-offset-8" style="margin-top:-5px; margin-left:68%">
+                                <input type="submit" value="Save" class="btn btn-primary" />
+
+                                @*@Html.ActionLink("Save", "Details", new { id = item.CarTypeID },
+                                    htmlAttributes: new { @class = "btn btn-primary", @onclick = "return validate('" + item.ManifacturerName + "','" + item.ModelName + "')" })*@
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
+
+
+        @*<div class="form-horizontal">
+            <h4>Rental</h4>
+            <div>
+                <hr />
+                <dl class="dl-horizontal">
+                    <dt>
+                        @Html.DisplayNameFor(model => model.UserId)
+                    </dt>
+                    <dd>
+                        @Html.DisplayFor(model => model.UserId)
+                    </dd>
+                    <dt>
+                        @Html.DisplayNameFor(model => model.CarNumber)
+                    </dt>
+                    <dd>
+                        @Html.DisplayFor(model => model.CarNumber)
+                    </dd>
+                    <dt>
+                        @Html.DisplayNameFor(model => model.StartDate)
+                    </dt>
+                    <dd id="start">
+                        @Html.DisplayFor(model => model.StartDate)
+                    </dd>
+                    <dt>
+                        @Html.DisplayNameFor(model => model.EndDate)
+                    </dt>
+                    <dd id="end">
+                        @Html.DisplayFor(model => model.EndDate)
+                    </dd>
+                    <dt>
+                        Price per day
+                    </dt>
+                    <dd>
+                        @ViewBag.dailyPrice
+                    </dd>
+                    <dt>
+                        Price per day late
+                    </dt>
+                    <dd>
+                        @ViewBag.latePrice
+                    </dd>
+                </dl>
+            </div>*@
 
 
 
@@ -86,53 +175,22 @@
         @Html.ValidationSummary(true, "", new { @class = "text-danger" })
         @Html.HiddenFor(model => model.RentalID)
 
+
         @*<div class="form-group">
-                @Html.LabelFor(model => model.CarNumber, htmlAttributes: new { @class = "control-label col-md-2" })
+                @Html.LabelFor(model => model.ReturningDate, htmlAttributes: new { @class = "control-label col-md-2" })
                 <div class="col-md-10">
-                    @Html.EditorFor(model => model.CarNumber, new { htmlAttributes = new { @class = "form-control" } })
-                    @Html.ValidationMessageFor(model => model.CarNumber, "", new { @class = "text-danger" })
+                    @Html.EditorFor(model => model.ReturningDate, new { htmlAttributes = new { @class = "form-control", @id = "return", @onchange = "a()" } })
+                    @Html.ValidationMessageFor(model => model.ReturningDate, "", new { @class = "text-danger" })
                 </div>
             </div>*@
 
         @*<div class="form-group">
-                @Html.LabelFor(model => model.UserId, "UserId", htmlAttributes: new { @class = "control-label col-md-2" })
-                <div class="col-md-10">
-                    @Html.DropDownList("UserId", null, htmlAttributes: new { @class = "form-control" })
-                    @Html.ValidationMessageFor(model => model.UserId, "", new { @class = "text-danger" })
+                <div class="col-md-offset-2 col-md-10">
+                    <input type="submit" value="Save" class="btn btn-default" />
                 </div>
             </div>*@
 
-        @*<div class="form-group">
-                @Html.LabelFor(model => model.StartDate, htmlAttributes: new { @class = "control-label col-md-2" })
-                <div class="col-md-10">
-                    @Html.EditorFor(model => model.StartDate, new { htmlAttributes = new { @class = "form-control" } })
-                    @Html.ValidationMessageFor(model => model.StartDate, "", new { @class = "text-danger" })
-                </div>
-            </div>*@
-
-        @*<div class="form-group">
-                @Html.LabelFor(model => model.EndDate, htmlAttributes: new { @class = "control-label col-md-2" })
-                <div class="col-md-10">
-                    @Html.EditorFor(model => model.EndDate, new { htmlAttributes = new { @class = "form-control" } })
-                    @Html.ValidationMessageFor(model => model.EndDate, "", new { @class = "text-danger" })
-                </div>
-            </div>*@
-
-        <div class="form-group">
-            @Html.LabelFor(model => model.ReturningDate, htmlAttributes: new { @class = "control-label col-md-2" })
-            <div class="col-md-10">
-                @Html.EditorFor(model => model.ReturningDate, new { htmlAttributes = new { @class = "form-control", @id = "return", @onchange = "a()" } })
-                @Html.ValidationMessageFor(model => model.ReturningDate, "", new { @class = "text-danger" })
-            </div>
-        </div>
-
-        <div class="form-group">
-            <div class="col-md-offset-2 col-md-10">
-                <input type="submit" value="Save" class="btn btn-default" />
-            </div>
-        </div>
-
-        <div>
+        @*<div>
             <hr />
             <dl class="dl-horizontal">
                 <dt>
@@ -149,11 +207,7 @@
 
                 </dd>
             </dl>
-        </div>
+        </div>*@
 
     </div>
 }
-
-<div>
-    @Html.ActionLink("Home", "Index")
-</div>
