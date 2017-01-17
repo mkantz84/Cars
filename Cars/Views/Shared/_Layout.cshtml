@@ -25,14 +25,16 @@
             if (authrole != "" && authrole != "Customer") {
                 $("#workers").show();
             }
-            var items = localStorage.interests.toString().split(",");
-            for (var i = 0; i < items.length; i++) {
-                var car = items[i].split(" ");
-                $("#ftr").append
-                    ('<a href="/Cars/ShowCar?manifacturer=' + car[0] + '&model=' + car[1] + '" class = "btn btn-default btn-sm">' + car[0] + '-' + car[1] + ' </a>   ');
-                //$("#ftr").append
-                //    ('<a href="/Cars/ShowCar?manifacturer=' + car[0] + '&model=' + car[1] + '" >' + '<input type="button" class="btn btn-group-justified" value="' + car[0] + '-' + car[1] + '" /></a>');
+            if (localStorage.interests != null) {
+                var items = localStorage.interests.toString().split(",");
+                for (var i = 0; i < items.length; i++) {
+                    var car = items[i].split(" ");
+                    $("#ftr").append
+                        ('<a href="/Cars/ShowCar?manifacturer=' + car[0] + '&model=' + car[1] + '" class = "btn btn-default btn-sm">' + car[0] + '-' + car[1] + ' </a>   ');
+                    //$("#ftr").append
+                    //    ('<a href="/Cars/ShowCar?manifacturer=' + car[0] + '&model=' + car[1] + '" >' + '<input type="button" class="btn btn-group-justified" value="' + car[0] + '-' + car[1] + '" /></a>');
 
+                }
             }
         });
     </script>

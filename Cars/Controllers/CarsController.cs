@@ -116,7 +116,7 @@ namespace Cars.Controllers
             if (carFilter.FreeText != "" && carFilter.FreeText != null)
             {
                 carTypes = carTypes.
-                    Where(s => s.ManifacturerName.ToLower().Contains(carFilter.FreeText.ToLower()) 
+                    Where(s => s.ManifacturerName.ToLower().Contains(carFilter.FreeText.ToLower())
                     || (s.ModelName.ToLower().Contains(carFilter.FreeText.ToLower()))).
                     ToList();
 
@@ -297,16 +297,26 @@ namespace Cars.Controllers
             return View(db.Cars.ToList());
         }
 
-        public ActionResult returning(string userId, int carNumber=0)
+        public ActionResult returning(string userId, int carNumber = 0)
         {
-            Rental rental = db.Rentals.FirstOrDefault(t => t.UserId == userId && t.CarNumber == carNumber);
-            if (rental != null)
+            List<Rental> rentals = new List<Rental>();
+            if (carNumber == 0)
+            {
+                rentals = db.Rentals.Where(t => t.UserId == userId && t.ReturningDate == null).ToList();
+            }
+            else
+            {
+                rentals = db.Rentals.Where(t => t.UserId == userId && t.CarNumber == carNumber && t.ReturningDate == null).ToList();
+            }
+            if (rentals != null)
             {
                 CarType carType = db.CarTypes.FirstOrDefault(t => t.CarTypeID == db.Cars.FirstOrDefault(c => c.CarNumber == carNumber).CarTypeID);
-                ViewBag.dailyPrice = carType.DailyPrice;
-                ViewBag.latePrice = carType.LateDayPrice;
-                return View(rental);
+                //ViewBag.dailyPrice = carType.DailyPrice;
+                //ViewBag.latePrice = carType.LateDayPrice;
+                return View(rentals);
             }
+            TempData["error"] = "yes";
+            //ViewBag.error = "yes";
             return Redirect("/cars/employee");
 
         }

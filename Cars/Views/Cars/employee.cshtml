@@ -113,6 +113,8 @@
         }
 </style>
 
+
+
 @*<h2>RETURNING CARS</h2>
 
     <form action="/cars/returning" method="get">
@@ -128,11 +130,15 @@
             <div class="panel panel-login">
                 <div class="panel-heading">
                     <div class="row">
-                        <div class="col-xs-6">
-                            <a class="active" id="login-form-link">Returning a car</a>
+                        <div class="col-xs-12">
+                            <a class="active" id="login-form-link">CAR RETURN</a>
                         </div>
                     </div>
                     <hr>
+                </div>
+                <div id="error" class="alert alert-danger alert-dismissable fade in" style="margin-bottom:unset; margin-right:15px;margin-left:15px; display:none">
+                    <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+                    <strong>No data!</strong> ID or car number is wrong
                 </div>
                 <div class="panel-body">
                     <div class="row">
@@ -159,3 +165,9 @@
         </div>
     </div>
 </div>
+<script>
+    var error = "@TempData["error"]";
+    if (error != "") {
+        $("#error").css("display", "block");
+    }
+</script>
