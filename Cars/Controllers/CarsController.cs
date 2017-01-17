@@ -19,11 +19,11 @@ namespace Cars.Controllers
         private static DateTime end;
         private static CarFilter carFilter = new CarFilter();
 
-
+        
         // GET: Cars
         public ActionResult Index()
         {
-
+            UpdateCars();
             string id = System.Web.HttpContext.Current.User.Identity.Name;
             if (id != "")
             {
@@ -51,6 +51,20 @@ namespace Cars.Controllers
             //    ViewBag.username = db.Users.Find(id).UserName;
             //}
             return View();
+        }
+
+        private void UpdateCars()
+        {
+            foreach (var item in db.Rentals.ToList())
+            {
+                if (item.StartDate==DateTime.Today)
+                {
+                    
+                    Car car = db.Cars.Find(item.Car.ID);
+                    car.IsAvailable = false;
+                    db.SaveChanges();
+                }
+            }
         }
 
         public ActionResult UsersList()
@@ -140,9 +154,10 @@ namespace Cars.Controllers
             {
                 ViewBag.pages = (carsNum / take) + 1;
             }
-
+            
             //return View(cars.Where(t => t.IsAvailable && t.IsProper).ToList());
             return View(carTypes);
+
         }
 
         public void InitFilter(GearType filterGear, int filterYear, string manifacturer, string model, string freeText)
@@ -230,7 +245,15 @@ namespace Cars.Controllers
             //int userId= db.Users.FirstOrDefault(t => t.UserName == name).UserID;
             rental.UserId = userId;
             //Car=car,
-
+            Rental check = db.Rentals.FirstOrDefault(
+                t => t.CarNumber == rental.CarNumber
+                && t.UserId == rental.UserId
+                && t.StartDate == rental.StartDate
+                && t.EndDate == rental.EndDate);
+            if (check != null)
+            {
+                return View();
+            }
             db.Rentals.Add(rental);
             db.SaveChanges();
             return View();
@@ -308,9 +331,9 @@ namespace Cars.Controllers
             {
                 rentals = db.Rentals.Where(t => t.UserId == userId && t.CarNumber == carNumber && t.ReturningDate == null).ToList();
             }
-            if (rentals != null)
+            if (rentals.Count != 0)
             {
-                CarType carType = db.CarTypes.FirstOrDefault(t => t.CarTypeID == db.Cars.FirstOrDefault(c => c.CarNumber == carNumber).CarTypeID);
+                //CarType carType = db.CarTypes.FirstOrDefault(t => t.CarTypeID == db.Cars.FirstOrDefault(c => c.CarNumber == carNumber).CarTypeID);
                 //ViewBag.dailyPrice = carType.DailyPrice;
                 //ViewBag.latePrice = carType.LateDayPrice;
                 return View(rentals);
@@ -322,17 +345,19 @@ namespace Cars.Controllers
         }
 
         [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult returning(Rental rental)
+        public ActionResult returning(/*Rental rental,*/ DateTime? returningDate = null, int rentalId = 0, int carNumber = 0, string userId = "0")
         {
-            if (ModelState.IsValid)
+            if (returningDate != null)
             {
-                Rental rent = db.Rentals.Find(rental.RentalID);
-                rent.ReturningDate = rental.ReturningDate;
+                Rental rent = db.Rentals.Find(rentalId);
+                Car car = db.Cars.Find(rent.Car.ID);
+                rent.ReturningDate = returningDate;
+                car.IsAvailable = true;
                 db.SaveChanges();
-                return Redirect("/cars/thanks");
+                return View("Purchase");
             }
-            return RedirectToAction("/cars/returning", rental.UserId, rental.CarNumber);
+            carNumber = 0;
+            return Redirect("returning/?userId=" + userId);
         }
 
         public ActionResult thanks()
@@ -414,7 +439,7 @@ namespace Cars.Controllers
                 {
                     FormsAuthentication.SetAuthCookie(user.UserID, false);
                 }
-                return RedirectToAction("Index");
+                return View("Purchase");
             }
 
             //ViewBag.CarTypeID = new SelectList(db.CarTypes, "CarTypeID", "ModelName", car.CarTypeID);
@@ -446,7 +471,7 @@ namespace Cars.Controllers
             {
                 db.Cars.Add(car);
                 db.SaveChanges();
-                return RedirectToAction("Index");
+                return View("Purchase");
             }
 
             ViewBag.CarTypeID = new SelectList(db.CarTypes, "CarTypeID", "ModelName", car.CarTypeID);
@@ -484,7 +509,7 @@ namespace Cars.Controllers
                 //editedCar = car;
                 db.Entry(car).State = EntityState.Modified;
                 db.SaveChanges();
-                return RedirectToAction("Index");
+                return View("Purchase");
             }
             ViewBag.CarTypeID = new SelectList(db.CarTypes, "CarTypeID", "ModelName", car.CarTypeID);
             ViewBag.StoreID = new SelectList(db.stores, "StoreID", "StoreName", car.StoreID);
@@ -519,7 +544,7 @@ namespace Cars.Controllers
             {
                 db.Entry(user).State = EntityState.Modified;
                 db.SaveChanges();
-                return RedirectToAction("Index");
+                return View("Purchase");
             }
             //ViewBag.CarTypeID = new SelectList(db.CarTypes, "CarTypeID", "ModelName", car.CarTypeID);
             //ViewBag.StoreID = new SelectList(db.stores, "StoreID", "StoreName", car.StoreID);
@@ -549,7 +574,7 @@ namespace Cars.Controllers
             Car car = db.Cars.Find(id);
             db.Cars.Remove(car);
             db.SaveChanges();
-            return RedirectToAction("Index");
+            return View("Purchase");
         }
 
         // GET: Cars/DeleteUser/5
@@ -575,7 +600,7 @@ namespace Cars.Controllers
             User user = db.Users.Find(id);
             db.Users.Remove(user);
             db.SaveChanges();
-            return RedirectToAction("Index");
+            return View("Purchase");
         }
 
         public ActionResult ManagerOrderssList()
@@ -611,7 +636,7 @@ namespace Cars.Controllers
             {
                 db.Entry(rental).State = EntityState.Modified;
                 db.SaveChanges();
-                return RedirectToAction("Index");
+                return View("Purchase");
             }
             //ViewBag.CarTypeID = new SelectList(db.CarTypes, "CarTypeID", "ModelName", car.CarTypeID);
             //ViewBag.StoreID = new SelectList(db.stores, "StoreID", "StoreName", car.StoreID);
@@ -651,7 +676,7 @@ namespace Cars.Controllers
             Rental rental = db.Rentals.Find(id);
             db.Rentals.Remove(rental);
             db.SaveChanges();
-            return RedirectToAction("Index");
+            return View("Purchase");
         }
 
         public ActionResult CreateOrder()
@@ -669,7 +694,7 @@ namespace Cars.Controllers
             {
                 db.Rentals.Add(rental);
                 db.SaveChanges();
-                return RedirectToAction("Index");
+                return View("Purchase");
             }
             return View(rental);
         }
@@ -707,7 +732,7 @@ namespace Cars.Controllers
             {
                 db.Entry(carType).State = EntityState.Modified;
                 db.SaveChanges();
-                return RedirectToAction("Index");
+                return View("Purchase");
             }
             return View(carType);
         }
@@ -745,7 +770,7 @@ namespace Cars.Controllers
             CarType carType = db.CarTypes.Find(id);
             db.CarTypes.Remove(carType);
             db.SaveChanges();
-            return RedirectToAction("Index");
+            return View("Purchase");
         }
 
         public ActionResult CreateCarType()
@@ -763,7 +788,7 @@ namespace Cars.Controllers
             {
                 db.CarTypes.Add(carType);
                 db.SaveChanges();
-                return RedirectToAction("Index");
+                return View("Purchase");
             }
             return View(carType);
         }

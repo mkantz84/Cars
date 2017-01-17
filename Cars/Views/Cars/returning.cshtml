@@ -15,6 +15,10 @@
             var returnId = "#return" + i;
             var priceDay = "#dayPrice" + i;
             var latePriceDay = "#lateDayPrice" + i;
+            var formId="#myForm"+i;
+            var rentalId="#rental"+i;
+            var carNumberId="#carNumber"+i;
+            var userIdId="#userId"+i;
 
             var oneDay = 24 * 60 * 60 * 1000; // hours*minutes*seconds*milliseconds
 
@@ -45,6 +49,18 @@
             var totalPay = (diffDays * dayPrice) + (lateDiffDays * latePrice);
             $(totalId).html(totalPay+"$");
 
+
+            var rental=$(rentalId).val();
+            var carNum=$(carNumberId).val();
+            var userId=$(userIdId).val();
+            $(formId).prop('action', "/cars/returning?returningDate="+ret+"&rentalId="+rental+"&carNumber="+carNum+"&userId="+userId);
+            @*$(formId).submit(function() {
+                var url = @Url.Action("Action","Controller");
+                var fu = "newValueOfFU"; // New value for FU
+                $('#MyID').prop('action', url + "?FU=" + fu;
+                return true;
+            });*@
+
         };
     }
 
@@ -56,10 +72,9 @@
 
 <h2>returning a car</h2>
 
-@using (Html.BeginForm())
-{
+@{
     var i = 0;
-    @Html.AntiForgeryToken()
+
     <div class="container">
         <div id="products" class="row list-group">
             <div class="alert alert-warning" id="alerti" style="display:none">
@@ -68,108 +83,128 @@
 
             @foreach (var item in Model)
             {
-                var totalId = "total" + i.ToString();
-                var startId = "start" + i.ToString();
-                var endId = "end" + i.ToString();
-                var lateId = "late" + i.ToString();
-                var returnId = "return" + i.ToString();
-                var dayPrice = "dayPrice" + i.ToString();
-                var lateDayPrice = "lateDayPrice" + i.ToString();
-                <div class="item  col-xs-4 col-lg-4">
-                    <div class="thumbnail" style="display:inline-block; margin:10px">
-                        <img style="max-height:150px;" class="group list-group-image" src=@item.Car.CarType.picture alt="@item.Car.CarType.ModelName picture" />
-                        <div class="caption">
-                            <h4 class="group inner list-group-item-heading">
-                                @item.Car.CarType.ManifacturerName @item.Car.CarType.ModelName
-                            </h4>
-                            <p>
-                                <dl class="dl-horizontal">
-                                    <dt style="width:unset">
-                                        @Html.DisplayNameFor(model => model.UserId)
-                                    </dt>
-                                    <dd>
-                                        @item.UserId
-                                    </dd>
-                                    <dt style="width:unset">
-                                        @Html.DisplayNameFor(model => model.CarNumber)
-                                    </dt>
-                                    <dd>
-                                        @item.CarNumber
-                                    </dd>
-                                    <dt style="width:unset">
-                                        @Html.DisplayNameFor(model => model.StartDate)
-                                    </dt>
-                                    <dd id="@startId">
-                                        @item.StartDate.Month/@item.StartDate.Day/@item.StartDate.Year
-                                    </dd>
-                                    <dt style="width:unset">
-                                        @Html.DisplayNameFor(model => model.EndDate)
-                                    </dt>
-                                    <dd id="@endId">
-                                        @item.EndDate.Month/@item.EndDate.Day/@item.EndDate.Year
-                                    </dd>
-                                    <dt style="width:unset">
-                                        Price per day
-                                    </dt>
-                                    <dd id="@dayPrice">
-                                        @item.Car.CarType.DailyPrice$
-                                        @*@ViewBag.dailyPrice$*@
-                                    </dd>
-                                    <dt style="width:unset">
-                                        Price per day late
-                                    </dt>
-                                    <dd id="@lateDayPrice">
-                                        @item.Car.CarType.LateDayPrice$
-                                        @*@ViewBag.latePrice$*@
-                                    </dd>
-                                    <dt style="width:unset">
-                                        @Html.DisplayNameFor(model => model.ReturningDate):
-                                    </dt>
-                                    <dt style="float:right">
-                                        @Html.EditorFor(x => item.ReturningDate, new { htmlAttributes = new { @class = "form-control", @id = "return" + i.ToString(), @onchange = "funcs[" + i + "]()" } })
-                                    </dt>
-                                    <dd></dd>
-                                    <dt style="width:unset">
-                                        Number of days late
-                                    </dt>
-                                    <dd id="@lateId">
+                using (Html.BeginForm("returning", "cars", new
+                { returningDate = "", rentalId = item.RentalID, carNumber = item.CarNumber, userId = item.UserId },
+                FormMethod.Post, new { id = "myForm" + i, onsubmit = "a()" }))
+                {
 
-                                    </dd>
 
-                                    <dt style="width:unset">
-                                        Total to pay
-                                    </dt>
-                                    <dd id="@totalId">
+                    var rentalId = "rental" + i.ToString();
+                    var carNumberId = "carNumber" + i.ToString();
+                    var userIdId = "userId" + i.ToString();
+                    var totalId = "total" + i.ToString();
+                    var startId = "start" + i.ToString();
+                    var endId = "end" + i.ToString();
+                    var lateId = "late" + i.ToString();
+                    var returnId = "return" + i.ToString();
+                    var dayPrice = "dayPrice" + i.ToString();
+                    var lateDayPrice = "lateDayPrice" + i.ToString();
 
-                                    </dd>
-                                </dl>
-                            </p>
-                            <div class="row">
-                                <div class="col-sm-6 col-sm-offset-8" style="margin-top:-5px; margin-left:68%">
-                                    <input type="submit" value="Save" class="btn btn-primary" />
+
+                    <div class="item  col-xs-4 col-lg-4">
+                        <div class="thumbnail" style="display:inline-block; margin:10px">
+                            <img style="max-height:150px;" class="group list-group-image" src=@item.Car.CarType.picture alt="@item.Car.CarType.ModelName picture" />
+                            <div class="caption">
+                                <h4 class="group inner list-group-item-heading">
+                                    @item.Car.CarType.ManifacturerName @item.Car.CarType.ModelName
+                                </h4>
+                                <p>
+                                    <dl class="dl-horizontal">
+                                        <dt style="width:unset">
+                                            @Html.DisplayNameFor(model => model.UserId)
+                                        </dt>
+                                        <dd>
+                                            @item.UserId
+                                        </dd>
+                                        <dt style="width:unset">
+                                            @Html.DisplayNameFor(model => model.CarNumber)
+                                        </dt>
+                                        <dd>
+                                            @item.CarNumber
+                                        </dd>
+                                        <dt style="width:unset">
+                                            @Html.DisplayNameFor(model => model.StartDate)
+                                        </dt>
+                                        <dd id="@startId">
+                                            @item.StartDate.Month/@item.StartDate.Day/@item.StartDate.Year
+                                        </dd>
+                                        <dt style="width:unset">
+                                            @Html.DisplayNameFor(model => model.EndDate)
+                                        </dt>
+                                        <dd id="@endId">
+                                            @item.EndDate.Month/@item.EndDate.Day/@item.EndDate.Year
+                                        </dd>
+                                        <dt style="width:unset">
+                                            Price per day
+                                        </dt>
+                                        <dd id="@dayPrice">
+                                            @item.Car.CarType.DailyPrice$
+                                            @*@ViewBag.dailyPrice$*@
+                                        </dd>
+                                        <dt style="width:unset">
+                                            Price per day late
+                                        </dt>
+                                        <dd id="@lateDayPrice">
+                                            @item.Car.CarType.LateDayPrice$
+                                            @*@ViewBag.latePrice$*@
+                                        </dd>
+                                        <dt style="width:unset">
+                                            @Html.DisplayNameFor(model => model.ReturningDate):
+                                        </dt>
+                                        <dt style="float:right" id="returning">
+                                            @Html.EditorFor(x => item.ReturningDate, new { htmlAttributes = new { @class = "form-control", @id = "return" + i.ToString(), @onchange = "funcs[" + i + "]()" } })
+                                        </dt>
+                                        <dd></dd>
+                                        <dt style="width:unset">
+                                            Number of days late
+                                        </dt>
+                                        <dd id="@lateId">
+
+                                        </dd>
+
+                                        <dt style="width:unset">
+                                            Total to pay
+                                        </dt>
+                                        <dd id="@totalId">
+
+                                        </dd>
+                                        
+                                        @*<dd style="display:none" id="@rentalId">@item.RentalID</dd>
+                                        <dd hidden="hidden" id="@carNumberId">@item.CarNumber</dd>
+                                        <dd hidden="hidden" id="@userIdId">@item.UserId</dd>*@
+                                    </dl>
+                                </p>
+                                <input type="hidden" id="@rentalId" value="@item.RentalID" />
+                                <input type="hidden" id="@carNumberId" value="@item.CarNumber" />
+                                <input type="hidden" id="@userIdId" value="@item.UserId" />
+                                <div class="row">
+                                    <div class="col-sm-6 col-sm-offset-8" style="margin-top:-5px; margin-left:68%">
+
+                                        <input type="submit" value="Save" class="btn btn-primary" />
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                </div>
-                @Html.ValidationSummary(true, "", new { @class = "text-danger" })
-                @Html.Hidden(item.RentalID.ToString())
-                <script>
-                    var today = new Date();
-                    var dd = today.getDate();
-                    var mm = today.getMonth()+1; //January is 0!
-                    var yyyy = today.getFullYear();
-                    if(dd<10){
-                        dd='0'+dd
-                    }
-                    if(mm<10){
-                        mm='0'+mm
-                    }
-                    today = yyyy+'-'+mm+'-'+dd;
-                    //var id="return"+"@i.ToString()";
-                    document.getElementById("@returnId").setAttribute("min", today);
-                </script>
-                i++;
+                    @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+                    @Html.Hidden(item.RentalID.ToString())
+                    <script>
+                        var today = new Date();
+                        var dd = today.getDate();
+                        var mm = today.getMonth()+1; //January is 0!
+                        var yyyy = today.getFullYear();
+                        if(dd<10){
+                            dd='0'+dd
+                        }
+                        if(mm<10){
+                            mm='0'+mm
+                        }
+                        today = yyyy+'-'+mm+'-'+dd;
+                        //var id="return"+"@i.ToString()";
+                        document.getElementById("@returnId").setAttribute("min", today);
+                    </script>
+                    i++;
+                }
             }
         </div>
     </div>
