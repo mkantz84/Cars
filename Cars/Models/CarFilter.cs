@@ -5,6 +5,9 @@ using System.Web;
 
 namespace Cars.Models
 {
+    /// <summary>
+    /// class to store all the filters given by the client
+    /// </summary>
     public class CarFilter
     {
         public GearType Gear { get; set; }

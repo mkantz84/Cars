@@ -19,47 +19,30 @@ namespace Cars.Controllers
         private static DateTime end;
         private static CarFilter carFilter = new CarFilter();
 
-        
+
         // GET: Cars
         public ActionResult Index()
         {
             UpdateCars();
+            //*** Cecking if theres a user connected. if yes, save information about him on session.
             string id = System.Web.HttpContext.Current.User.Identity.Name;
             if (id != "")
             {
                 User authUser = db.Users.Find(id);
-                Session["authname"] = authUser.UserName;
-                if (authUser.IsManager)
-                {
-                    Session["authrole"] = "Manager";
-                }
-                else if (authUser.IsEmployee)
-                {
-                    Session["authrole"] = "Employee";
-                }
-                else
-                {
-                    Session["authrole"] = "Customer";
-                }
+                SaveSession(authUser);
             }
-
-            //ViewBag.authid = "empty";
-            //string id=System.Web.HttpContext.Current.User.Identity.Name;            
-            //if (id != "")
-            //{
-            //    ViewBag.authid = id;
-            //    ViewBag.username = db.Users.Find(id).UserName;
-            //}
             return View();
         }
 
+        /// <summary>
+        /// taking out of availability cars that are renting today
+        /// </summary>
         private void UpdateCars()
         {
             foreach (var item in db.Rentals.ToList())
             {
-                if (item.StartDate==DateTime.Today)
+                if (item.StartDate == DateTime.Today)
                 {
-                    
                     Car car = db.Cars.Find(item.Car.ID);
                     car.IsAvailable = false;
                     db.SaveChanges();
@@ -67,11 +50,17 @@ namespace Cars.Controllers
             }
         }
 
-        public ActionResult UsersList()
-        {
-            return View(db.Users.ToList());
-        }
+        //public ActionResult UsersList()
+        //{
+        //    return View(db.Users.ToList());
+        //}
 
+        /// <summary>
+        /// presenting a specific car from the footer
+        /// </summary>
+        /// <param name="manifacturer"></param>
+        /// <param name="model"></param>
+        /// <returns></returns>
         public ActionResult ShowCar(string manifacturer, string model)
         {
             ViewBag.years = db.CarTypes.Select(t => t.Year).Distinct();
@@ -82,10 +71,15 @@ namespace Cars.Controllers
             return View(carType);
         }
 
+        /// <summary>
+        /// presenting the fleet of the cars to the customer. per filter and page number.
+        /// </summary>
+        /// <param name="skip"></param>
+        /// <param name="take"></param>
+        /// <returns></returns>
         public ActionResult CarsList(int skip = 1, int take = 3)
         {
             string userId = System.Web.HttpContext.Current.User.Identity.Name;
-            List<CarType> carTypes = new List<CarType>();
             if (userId != "")
             {
                 bool isManager = db.Users.FirstOrDefault(t => t.UserID == userId).IsManager;
@@ -94,15 +88,63 @@ namespace Cars.Controllers
                     return Redirect("/cars/managercarslist");
                 }
             }
-            var cars = db.Cars.Include(c => c.CarType).Include(c => c.Store);
-            CarData carData = new CarData
-            {
-                Cars = cars.Where(t => t.IsAvailable && t.IsProper),
-            };
+            List<CarType> carTypes;
+            int carsNum;
+            MakeList(skip, take, out carTypes, out carsNum);
+            CreateViewBags(skip, take, carsNum);
+            return View(carTypes);
 
-            int carsNum = db.CarTypes.Count();
+        }
 
+        /// <summary>
+        /// Making the list of the cars specific to the page, with the filters added
+        /// </summary>
+        /// <param name="skip"></param>
+        /// <param name="take"></param>
+        /// <param name="carTypes"></param>
+        /// <param name="carsNum"></param>
+        private void MakeList(int skip, int take, out List<CarType> carTypes, out int carsNum)
+        {
+            carTypes = new List<CarType>();
             carTypes = db.CarTypes.OrderBy(t => t.ManifacturerName).ToList();
+            carTypes = FilterCars(carTypes);
+            carsNum = carTypes.Count;
+            carTypes = carTypes.
+                Skip((skip - 1) * take).
+                Take(take).
+                ToList();
+        }
+
+        /// <summary>
+        /// create all the information to send the client side
+        /// </summary>
+        /// <param name="skip"></param>
+        /// <param name="take"></param>
+        /// <param name="carsNum"></param>
+        private void CreateViewBags(int skip, int take, int carsNum)
+        {
+            ViewBag.carsNum = carsNum;
+            ViewBag.years = db.CarTypes.Select(t => t.Year).Distinct();
+            ViewBag.mani = db.CarTypes.Select(t => t.ManifacturerName).Distinct();
+            ViewBag.model = db.CarTypes.Select(t => t.ModelName).Distinct();
+            ViewBag.current = skip;
+            if (carsNum % take == 0)
+            {
+                ViewBag.pages = (carsNum / take);
+            }
+            else
+            {
+                ViewBag.pages = (carsNum / take) + 1;
+            }
+        }
+
+        /// <summary>
+        /// changing the list according to the filters added
+        /// </summary>
+        /// <param name="carTypes"></param>
+        /// <returns></returns>
+        private static List<CarType> FilterCars(List<CarType> carTypes)
+        {
             if (carFilter.Gear != GearType.DEFAULT)
             {
                 carTypes = carTypes.
@@ -135,31 +177,18 @@ namespace Cars.Controllers
                     ToList();
 
             }
-            carsNum = carTypes.Count;
-            carTypes = carTypes.
-                Skip((skip - 1) * take).
-                Take(take).
-                ToList();
-            //carsNum = carTypes.Count;
-            ViewBag.carsNum = carsNum;
-            ViewBag.years = db.CarTypes.Select(t => t.Year).Distinct();
-            ViewBag.mani = db.CarTypes.Select(t => t.ManifacturerName).Distinct();
-            ViewBag.model = db.CarTypes.Select(t => t.ModelName).Distinct();
-            ViewBag.current = skip;
-            if (carsNum % take == 0)
-            {
-                ViewBag.pages = (carsNum / take);
-            }
-            else
-            {
-                ViewBag.pages = (carsNum / take) + 1;
-            }
-            
-            //return View(cars.Where(t => t.IsAvailable && t.IsProper).ToList());
-            return View(carTypes);
 
+            return carTypes;
         }
 
+        /// <summary>
+        /// initializing the filters that the client picked
+        /// </summary>
+        /// <param name="filterGear"></param>
+        /// <param name="filterYear"></param>
+        /// <param name="manifacturer"></param>
+        /// <param name="model"></param>
+        /// <param name="freeText"></param>
         public void InitFilter(GearType filterGear, int filterYear, string manifacturer, string model, string freeText)
         {
             carFilter.Gear = filterGear;
@@ -169,54 +198,94 @@ namespace Cars.Controllers
             carFilter.FreeText = freeText;
         }
 
+        /// <summary>
+        /// initializing the start hire date that the client picked
+        /// </summary>
+        /// <param name="startDate"></param>
         public void InitStartDate(DateTime startDate)
         {
             start = startDate;
         }
 
+        /// <summary>
+        /// initializing the end hire date that the client picked
+        /// </summary>
+        /// <param name="endDate"></param>
         public void InitEndDate(DateTime endDate)
         {
             end = endDate;
         }
 
-        // GET: Cars/Details/5
+        /// <summary>
+        /// a page that shows the details of the car picked, dates and prices before purchasing
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
         public ActionResult Details(int? id)
         {
             if (id == null)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Car selectedCar = new Car();
-            List<Rental> rentals =
-                db.Rentals.Where(t => (t.StartDate >= start && t.StartDate <= end) || (t.StartDate <= start && t.EndDate >= start)).ToList();
-            List<Car> unavalaibleCars = rentals.Select(t => t.Car).ToList();
-            foreach (var item in db.Cars)
-            {
-                if (item.CarTypeID == id)
-                {
-                    selectedCar = item;
-                    if (unavalaibleCars.Exists(c => c.ID == selectedCar.ID))
-                    {
-                        selectedCar.CarNumber = 0;
-                        break;
-                    }
-                }
-            }
+            Car selectedCar = FindAvailableCar(id);
 
             ViewBag.carNumber = selectedCar.CarNumber;
-            CarType carType = db.CarTypes.Find(id);
-            CarInfo carinfo = new CarInfo
+            CarType carType;
+            CarInfo carinfo;
+            MakeCarInfo(id, selectedCar, out carType, out carinfo);
+            if (carType == null)
+            {
+                return HttpNotFound();
+            }
+            return View(carinfo);
+        }
+
+        /// <summary>
+        /// gether the car information for the rental request
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="selectedCar"></param>
+        /// <param name="carType"></param>
+        /// <param name="carinfo"></param>
+        private void MakeCarInfo(int? id, Car selectedCar, out CarType carType, out CarInfo carinfo)
+        {
+            carType = db.CarTypes.Find(id);
+            carinfo = new CarInfo
             {
                 Car = selectedCar,
                 CarType = carType,
                 HireDateStart = start,
                 HireDateEnd = end,
             };
-            if (carType == null)
+        }
+
+        /// <summary>
+        /// finds an available car in the fleet according to the cartype and the dates asked
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        private Car FindAvailableCar(int? id)
+        {
+            Car selectedCar = new Car();
+            //*** list of all unavailable cars in the specic dates:
+            List<Car> unavalaibleCars =
+                db.Rentals.Where(t => (t.StartDate >= start && t.StartDate <= end) ||
+                (t.StartDate <= start && t.EndDate >= start)).Select(t => t.Car).ToList();
+            //*** check if the requested cartype available:
+            foreach (var item in db.Cars.Where(t => t.CarTypeID == id).ToList())
             {
-                return HttpNotFound();
+                selectedCar = item;
+                if (!unavalaibleCars.Exists(c => c.ID == selectedCar.ID))
+                {
+                    break;
+                }
+                //if the selected car exists in the unavailable list- give the car number '0' and look for a new one:
+                else
+                {
+                    selectedCar.CarNumber = 0;
+                }
             }
-            return View(carinfo);
+            return selectedCar;
         }
 
         public ActionResult UserDetails(string id)
@@ -430,6 +499,12 @@ namespace Cars.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult CreateUser(User user)
         {
+            User existUser = db.Users.FirstOrDefault(t => t.UserID == user.UserID || t.Email == user.Email);
+            if (existUser != null)
+            {
+                ViewBag.exist = "exist";
+                return View(user);
+            }
             string userId = System.Web.HttpContext.Current.User.Identity.Name;
             if (ModelState.IsValid)
             {
@@ -439,12 +514,33 @@ namespace Cars.Controllers
                 {
                     FormsAuthentication.SetAuthCookie(user.UserID, false);
                 }
+                User authUser = db.Users.Find(user.UserID);
+                SaveSession(authUser);
                 return View("Purchase");
             }
 
             //ViewBag.CarTypeID = new SelectList(db.CarTypes, "CarTypeID", "ModelName", car.CarTypeID);
             //ViewBag.StoreID = new SelectList(db.stores, "StoreID", "StoreName", car.StoreID);
             return View(user);
+        }
+
+        private void SaveSession(User authUser)
+        {
+            //User authUser = db.Users.Find(user.UserID);
+            Session["userId"] = authUser.UserID;
+            Session["authname"] = authUser.UserName;
+            if (authUser.IsManager)
+            {
+                Session["authrole"] = "Manager";
+            }
+            else if (authUser.IsEmployee)
+            {
+                Session["authrole"] = "Employee";
+            }
+            else
+            {
+                Session["authrole"] = "Customer";
+            }
         }
 
         // GET: Cars/Create
@@ -791,6 +887,11 @@ namespace Cars.Controllers
                 return View("Purchase");
             }
             return View(carType);
+        }
+
+        public ActionResult Contact()
+        {
+            return View();
         }
     }
 }

@@ -79,31 +79,40 @@
         var start = document.getElementById("startDate").value;
         var end = document.getElementById("endDate").value;
         if (start == "" && end == "") {
-            $("#startDate").css("borderColor", "red");
-            $("#endDate").css("borderColor", "red");
+            $("#startDate").css({ "borderColor": "red", "border-width": "thick" });
+            $("#endDate").css({ "borderColor": "red", "border-width": "thick" });
             $("#startDate").popover({
                 title: 'Warning!',
                 content: 'date must be filled',
                 placement: 'bottom'
             }).popover('show');
+            $('html, body').animate({
+                scrollTop: $("#datepicker").offset().top
+            }, 500);
             return false;
         }
         else if (start == "") {
-            $("#startDate").css("borderColor", "red");
+            $("#startDate").css({ "borderColor": "red", "border-width": "thick" });
             $("#startDate").popover({
                 title: 'Warning!',
                 content: 'date must be filled',
                 placement: 'bottom'
             }).popover('show');
+            $('html, body').animate({
+                scrollTop: $("#datepicker").offset().top
+            }, 500);
             return false;
         }
         else if (end == "") {
-            $("#endDate").css("borderColor", "red");
+            $("#endDate").css({ "borderColor": "red", "border-width": "thick" });
             $("#endDate").popover({
                 title: 'Warning!',
                 content: 'date must be filled',
                 placement: 'bottom'
             }).popover('show');
+            $('html, body').animate({
+                scrollTop: $("#datepicker").offset().top
+            }, 500);
             return false;
         }
 
@@ -158,8 +167,10 @@
             $('#products .item').addClass('grid-group-item');
         });
         $("#startDate").change(function () {
-            $("#startDate").css("borderColor", "green").popover('disable');
-            $("#endDate").css("borderColor", "green")
+            $("#startDate").css("borderColor", "green").popover('destroy');
+        });
+        $("#endDate").change(function () {
+            $("#endDate").css("borderColor", "green").popover('destroy');
         });
     });
 
