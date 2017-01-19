@@ -83,7 +83,7 @@
             $("#startDate").popover({
                 title: 'Warning!',
                 content: 'date must be filled',
-                placement: 'bottom'                
+                placement: 'bottom'
             }).popover('show');
             $('html, body').animate({
                 scrollTop: $("#datepicker").offset().top
@@ -95,7 +95,7 @@
             $("#startDate").popover({
                 title: 'Warning!',
                 content: 'date must be filled',
-                placement: 'bottom'                
+                placement: 'bottom'
             }).popover('show');
             $('html, body').animate({
                 scrollTop: $("#datepicker").offset().top
@@ -107,7 +107,7 @@
             $("#endDate").popover({
                 title: 'Warning!',
                 content: 'date must be filled',
-                placement: 'bottom'                
+                placement: 'bottom'
             }).popover('show');
             $('html, body').animate({
                 scrollTop: $("#datepicker").offset().top
@@ -175,9 +175,37 @@
         $("#endDate").change(function () {
             $("#endDate").css("borderColor","green").popover('destroy');
         });
+        var temp;
+        var models="@ViewBag.model";
+        var modelsArray=models.split(",");
+        $("#slctMani").change(function () {
+            $("#slctModel")
+                .empty()
+                .removeAttr('readonly')
+                .append($("<option></option>")
+                .attr({"value":"","disabled":"disabled", "selected":"selected", "hidden":"hidden"})
+                .text("Model"));
+            if ($("#slctMani").val()=="") {
+                $.each(modelsArray,function (i,value) {
+                    temp=value.split(" ");
+                    $("#slctModel").append($("<option></option>")
+                        .attr("value",temp[1])
+                        .text(value));
+                });
+            }
+            else {
+                $.each(modelsArray,function (i,value) {
+                    temp=value.split(" ");
+                    if (temp[0]==$("#slctMani").val()) {
+                        $("#slctModel").append($("<option></option>")
+                            .attr("value",temp[1])
+                            .text(temp[1]));
+                    }
+                });
+            }
+            
+        });
     });
-    
-
 </script>
 
 
@@ -194,7 +222,7 @@
         </div>
     </div>
 
-    <div class="input-daterange input-group" id="datepicker" >
+    <div class="input-daterange input-group" id="datepicker">
         <span class="input-group-addon">from</span>
         <input type="text" class="input-sm form-control"
                name="startDate" id="startDate" placeholder="Start Date" />
@@ -224,7 +252,7 @@
                             <option value="0">ALL</option>
                             @foreach (var item in ViewBag.years)
                             {
-                            <option value="@item">@item</option>
+                                <option value="@item">@item</option>
                             }
                         </select>
                     </div>
@@ -232,24 +260,24 @@
                 <td>
                     <div style='width:70%; margin-left:0%'>
                         <select class="form-control" id="slctMani" oninput="sendFilter()">
-                            <option value="" disabled selected hidden>Manifacturer</option>
+                            <option value="" disabled selected hidden="hidden">Manifacturer</option>
                             <option value="">ALL</option>
                             @foreach (var item in ViewBag.mani)
                             {
-                            <option value="@item">@item</option>
+                                <option value="@item">@item</option>
                             }
                         </select>
                     </div>
                 </td>
                 <td>
                     <div style='width:70%; margin-left:0%'>
-                        <select class="form-control" id="slctModel" oninput="sendFilter()">
-                            <option value="" disabled selected hidden>Model</option>
-                            <option value="">ALL</option>
-                            @foreach (var item in ViewBag.model)
-                            {
-                            <option value="@item">@item</option>
-                            }
+                        <select readonly class="form-control" id="slctModel" oninput="sendFilter()">
+                            <option value="" disabled="disabled" selected="selected" hidden>Model</option>
+                            @*<option value="">ALL</option>
+                                @foreach (var item in ViewBag.model)
+                                {
+                                <option value="@item">@item</option>
+                                }*@
                         </select>
                     </div>
                 </td>
@@ -298,7 +326,7 @@
                             </div>
                             <div class="col-xs-12 col-md-6">
                                 @Html.ActionLink("Continue", "Details", new { id = item.CarTypeID },
-                               htmlAttributes: new { @class = "btn btn-primary", @onclick = "return validate('"+item.ManifacturerName+"','"+item.ModelName+"')" })
+                               htmlAttributes: new { @class = "btn btn-primary", @onclick = "return validate('" + item.ManifacturerName + "','" + item.ModelName + "')" })
                             </div>
                         </div>
                     </div>
@@ -312,44 +340,44 @@
         <ul class="pagination">
             @if (ViewBag.current == 1)
             {
-            <li class="page-item disabled">
-                <span class="page-link">Previous</span>
-            </li>
+                <li class="page-item disabled">
+                    <span class="page-link">Previous</span>
+                </li>
             }
             else
             {
-            <li class="page-item">
-                <a class="page-link" href="/cars/carslist?skip=@(ViewBag.current-1)">Previous</a>
-            </li>
+                <li class="page-item">
+                    <a class="page-link" href="/cars/carslist?skip=@(ViewBag.current-1)">Previous</a>
+                </li>
             }
             @for (int i = 1; i < ViewBag.pages + 1; i++)
             {
                 if (i == ViewBag.current)
                 {
-            <li class="page-item active">
-                <span class="page-link">
-                    @i
-                    <span class="sr-only">(current)</span>
-                </span>
-            </li>
+                    <li class="page-item active">
+                        <span class="page-link">
+                            @i
+                            <span class="sr-only">(current)</span>
+                        </span>
+                    </li>
                 }
                 else
                 {
-            <li class="page-item"><a class="page-link" href="/cars/carslist?skip=@i">@i</a></li>
+                    <li class="page-item"><a class="page-link" href="/cars/carslist?skip=@i">@i</a></li>
                 }
 
             }
             @if (ViewBag.current == ViewBag.pages)
             {
-            <li class="page-item disabled">
-                <span class="page-link">Next</span>
-            </li>
+                <li class="page-item disabled">
+                    <span class="page-link">Next</span>
+                </li>
             }
             else
             {
-            <li class="page-item">
-                <a class="page-link" href="/cars/carslist?skip=@(ViewBag.current+1)">Next</a>
-            </li>
+                <li class="page-item">
+                    <a class="page-link" href="/cars/carslist?skip=@(ViewBag.current+1)">Next</a>
+                </li>
             }
         </ul>
     </nav>

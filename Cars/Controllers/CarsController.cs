@@ -19,7 +19,6 @@ namespace Cars.Controllers
         private static DateTime end;
         private static CarFilter carFilter = new CarFilter();
 
-
         // GET: Cars
         public ActionResult Index()
         {
@@ -65,7 +64,11 @@ namespace Cars.Controllers
         {
             ViewBag.years = db.CarTypes.Select(t => t.Year).Distinct();
             ViewBag.mani = db.CarTypes.Select(t => t.ManifacturerName).Distinct();
-            ViewBag.model = db.CarTypes.Select(t => t.ModelName).Distinct();
+            var models = db.CarTypes.Select(t => new { t.ManifacturerName, t.ModelName }).Distinct().ToList();
+            foreach (var item in models)
+            {
+                ViewBag.model += item.ManifacturerName + " " + item.ModelName + ",";
+            }
             CarType carType = db.CarTypes.FirstOrDefault
                 (t => t.ManifacturerName == manifacturer && t.ModelName == model);
             return View(carType);
@@ -126,7 +129,12 @@ namespace Cars.Controllers
             ViewBag.carsNum = carsNum;
             ViewBag.years = db.CarTypes.Select(t => t.Year).Distinct();
             ViewBag.mani = db.CarTypes.Select(t => t.ManifacturerName).Distinct();
-            ViewBag.model = db.CarTypes.Select(t => t.ModelName).Distinct();
+            var models = db.CarTypes.Select(t => new { t.ManifacturerName, t.ModelName }).Distinct().ToList();
+            //*** make viewbag array:
+            foreach (var item in models)
+            {
+                ViewBag.model += item.ManifacturerName + " " + item.ModelName + ",";
+            }
             ViewBag.current = skip;
             if (carsNum % take == 0)
             {
@@ -288,6 +296,11 @@ namespace Cars.Controllers
             return selectedCar;
         }
 
+        /// <summary>
+        /// user datail for the manager
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
         public ActionResult UserDetails(string id)
         {
             User user = db.Users.Find(id);
@@ -298,27 +311,26 @@ namespace Cars.Controllers
             return View(user);
         }
 
+        /// <summary>
+        /// a view after the purchase ends. make a rental class and add it to db
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
         [Authorize]
         public ActionResult Purchase(int? id)
         {
             string userId = System.Web.HttpContext.Current.User.Identity.Name;
             Car car = db.Cars.Find(id);
-            //car.HireDateStart = start;
-            //car.HireDateEnd = end;
-            Rental rental = new Rental();
-
-            rental.Car = car;
-            rental.CarNumber = car.CarNumber;
-            rental.StartDate = start;
-            rental.EndDate = end;
-            //int userId= db.Users.FirstOrDefault(t => t.UserName == name).UserID;
-            rental.UserId = userId;
-            //Car=car,
-            Rental check = db.Rentals.FirstOrDefault(
-                t => t.CarNumber == rental.CarNumber
-                && t.UserId == rental.UserId
-                && t.StartDate == rental.StartDate
-                && t.EndDate == rental.EndDate);
+            Rental rental = new Rental()
+            {
+                Car = car,
+                CarNumber = car.CarNumber,
+                StartDate = start,
+                EndDate = end,
+                UserId = userId,
+            };
+            //*** in the case the page refresh- wont save twice
+            Rental check = CheckRental(rental);
             if (check != null)
             {
                 return View();
@@ -328,22 +340,48 @@ namespace Cars.Controllers
             return View();
         }
 
+        /// <summary>
+        /// in the case the page refresh- wont save twice
+        /// </summary>
+        /// <param name="rental"></param>
+        /// <returns></returns>
+        private Rental CheckRental(Rental rental)
+        {
+            return db.Rentals.FirstOrDefault(
+                            t => t.CarNumber == rental.CarNumber
+                            && t.UserId == rental.UserId
+                            && t.StartDate == rental.StartDate
+                            && t.EndDate == rental.EndDate);
+        }
+
+        /// <summary>
+        /// shows the purchase history of the connected client
+        /// </summary>
+        /// <param name="skip"></param>
+        /// <param name="take"></param>
+        /// <returns></returns>
         [Authorize]
         public ActionResult Purchases(int skip = 1, int take = 3)
         {
             string userId = System.Web.HttpContext.Current.User.Identity.Name;
-            //int userId = db.Users.FirstOrDefault(t => t.UserName == name).UserID;
-            //if (db.Users.FirstOrDefault(t=>t.UserID==userId).IsManager)
-            //{
-            //    return View("ManagerOrdersList");
-            //}
             List<Rental> rentals = db.Rentals.Where(t => t.UserId == userId).ToList();
-
             int carsNum = rentals.Count;
             rentals = rentals.
                 Skip((skip - 1) * take).
                 Take(take).
                 ToList();
+            SaveViewBages(skip, take, carsNum);
+            return View(rentals);
+        }
+
+        /// <summary>
+        /// send viewbags for the pagination
+        /// </summary>
+        /// <param name="skip"></param>
+        /// <param name="take"></param>
+        /// <param name="carsNum"></param>
+        private void SaveViewBages(int skip, int take, int carsNum)
+        {
             ViewBag.carsNum = carsNum;
             ViewBag.current = skip;
             if (carsNum % take == 0)
@@ -354,10 +392,12 @@ namespace Cars.Controllers
             {
                 ViewBag.pages = (carsNum / take) + 1;
             }
-
-            return View(rentals);
         }
 
+        /// <summary>
+        /// workers view only. check if the user is manager or employee and redirects accordingly
+        /// </summary>
+        /// <returns></returns>
         [Authorize]
         public ActionResult Workers()
         {
@@ -374,24 +414,25 @@ namespace Cars.Controllers
             return Redirect("/cars/index");
         }
 
+        /// <summary>
+        /// employees view. only "returning cars" view
+        /// </summary>
+        /// <returns></returns>
         public ActionResult employee()
         {
             return View();
         }
 
-        public ActionResult manager()
-        {
-            return View();
-        }
-
-        public ActionResult ManagerCarsList()
-        {
-            return View(db.Cars.ToList());
-        }
-
+        /// <summary>
+        /// after the employee enters the id of the client, with or without the car number- list of all the cars that the client have that havent returned yet.
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <param name="carNumber"></param>
+        /// <returns></returns>
         public ActionResult returning(string userId, int carNumber = 0)
         {
             List<Rental> rentals = new List<Rental>();
+            //*** in case the employee entered only customer id:
             if (carNumber == 0)
             {
                 rentals = db.Rentals.Where(t => t.UserId == userId && t.ReturningDate == null).ToList();
@@ -402,19 +443,23 @@ namespace Cars.Controllers
             }
             if (rentals.Count != 0)
             {
-                //CarType carType = db.CarTypes.FirstOrDefault(t => t.CarTypeID == db.Cars.FirstOrDefault(c => c.CarNumber == carNumber).CarTypeID);
-                //ViewBag.dailyPrice = carType.DailyPrice;
-                //ViewBag.latePrice = carType.LateDayPrice;
                 return View(rentals);
             }
+            //*** if the list is empty:
             TempData["error"] = "yes";
-            //ViewBag.error = "yes";
             return Redirect("/cars/employee");
-
         }
 
+        /// <summary>
+        /// checks of the input is correct and updating the db
+        /// </summary>
+        /// <param name="returningDate"></param>
+        /// <param name="rentalId"></param>
+        /// <param name="carNumber"></param>
+        /// <param name="userId"></param>
+        /// <returns></returns>
         [HttpPost]
-        public ActionResult returning(/*Rental rental,*/ DateTime? returningDate = null, int rentalId = 0, int carNumber = 0, string userId = "0")
+        public ActionResult returning(DateTime? returningDate = null, int rentalId = 0, int carNumber = 0, string userId = "0")
         {
             if (returningDate != null)
             {
@@ -425,43 +470,58 @@ namespace Cars.Controllers
                 db.SaveChanges();
                 return View("Purchase");
             }
+            //*** in case the employee hasnt entered returning date:
             carNumber = 0;
             return Redirect("returning/?userId=" + userId);
         }
 
-        public ActionResult thanks()
+        /// <summary>
+        /// managers view. Management system view
+        /// </summary>
+        /// <returns></returns>
+        public ActionResult manager()
         {
             return View();
         }
 
+        /// <summary>
+        /// list of car fleet
+        /// </summary>
+        /// <returns></returns>
+        public ActionResult ManagerCarsList()
+        {
+            return View(db.Cars.ToList());
+        }
+
+        //public ActionResult thanks()
+        //{
+        //    return View();
+        //}
+
+        /// <summary>
+        /// login view
+        /// </summary>
+        /// <returns></returns>
         [HttpGet]
         public ActionResult login()
         {
             return View();
         }
 
+        /// <summary>
+        /// ufter the client loged in- checks his permissions and send them to the client side
+        /// </summary>
+        /// <param name="userName"></param>
+        /// <param name="password"></param>
+        /// <param name="returnUrl"></param>
+        /// <returns></returns>
         [HttpPost]
         public ActionResult login(string userName, string password, string returnUrl)
         {
             User user = db.Users.FirstOrDefault(t => t.UserName == userName && t.Password == password);
-
             if (user != null)
             {
-                FormsAuthentication.SetAuthCookie(user.UserID.ToString(), false);
-                Session["authname"] = userName;
-
-                if (user.IsManager)
-                {
-                    Session["authrole"] = "Manager";
-                }
-                else if (user.IsEmployee)
-                {
-                    Session["authrole"] = "Employee";
-                }
-                else
-                {
-                    Session["authrole"] = "Customer";
-                }
+                SaveAuthSession(userName, user);
                 if (returnUrl == "" || returnUrl == null)
                 {
                     return Redirect("/cars/index");
@@ -471,6 +531,29 @@ namespace Cars.Controllers
             return View();
         }
 
+        /// <summary>
+        /// saves information about the client permissions in the session
+        /// </summary>
+        /// <param name="userName"></param>
+        /// <param name="user"></param>
+        private void SaveAuthSession(string userName, User user)
+        {
+            FormsAuthentication.SetAuthCookie(user.UserID.ToString(), false);
+            Session["authname"] = userName;
+            if (user.IsManager)
+            {
+                Session["authrole"] = "Manager";
+            }
+            else if (user.IsEmployee)
+            {
+                Session["authrole"] = "Employee";
+            }
+            else
+            {
+                Session["authrole"] = "Customer";
+            }
+        }
+
         public ActionResult logout()
         {
             Session.Clear();
@@ -478,31 +561,37 @@ namespace Cars.Controllers
             return Redirect("/cars/index");
         }
 
+        /// <summary>
+        /// register view
+        /// </summary>
+        /// <returns></returns>
         public ActionResult CreateUser()
         {
             string userId = System.Web.HttpContext.Current.User.Identity.Name;
-
             if (userId != "")
             {
                 User user = db.Users.Find(userId);
+                //*** if the client has manager permissions:
                 if (user.IsManager)
                 {
                     return View("ManagerCreateUser");
                 }
                 return Redirect("/cars/index");
             }
-            ViewBag.fromCreate = "trueee";
             return View();
         }
 
+        /// <summary>
+        /// adding new user to db.
+        /// </summary>
+        /// <param name="user"></param>
+        /// <returns></returns>
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult CreateUser(User user)
         {
-            User existUser = db.Users.FirstOrDefault(t => t.UserID == user.UserID || t.Email == user.Email);
-            if (existUser != null)
+            if (UserExist(user))
             {
-                ViewBag.exist = "exist";
                 return View(user);
             }
             string userId = System.Web.HttpContext.Current.User.Identity.Name;
@@ -518,15 +607,31 @@ namespace Cars.Controllers
                 SaveSession(authUser);
                 return View("Purchase");
             }
-
-            //ViewBag.CarTypeID = new SelectList(db.CarTypes, "CarTypeID", "ModelName", car.CarTypeID);
-            //ViewBag.StoreID = new SelectList(db.stores, "StoreID", "StoreName", car.StoreID);
             return View(user);
         }
 
+        /// <summary>
+        /// checks if the same user allready exists in the db
+        /// </summary>
+        /// <param name="user"></param>
+        /// <returns></returns>
+        private bool UserExist(User user)
+        {
+            User existUser = db.Users.FirstOrDefault(t => t.UserID == user.UserID || t.Email == user.Email);
+            if (existUser != null)
+            {
+                ViewBag.exist = "exist";
+                return true;
+            }
+            return false;
+        }
+
+        /// <summary>
+        /// saves information about the client permissions in the session 
+        /// </summary>
+        /// <param name="authUser"></param>
         private void SaveSession(User authUser)
         {
-            //User authUser = db.Users.Find(user.UserID);
             Session["userId"] = authUser.UserID;
             Session["authname"] = authUser.UserName;
             if (authUser.IsManager)
@@ -543,6 +648,11 @@ namespace Cars.Controllers
             }
         }
 
+
+        /// <summary>
+        /// create a new car view
+        /// </summary>
+        /// <returns></returns>
         // GET: Cars/Create
         public ActionResult Create()
         {
@@ -556,9 +666,11 @@ namespace Cars.Controllers
             return View(db.Users.ToList());
         }
 
-        // POST: Cars/Create
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
-        // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
+        /// <summary>
+        /// post of create new car
+        /// </summary>
+        /// <param name="car"></param>
+        /// <returns></returns>
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult Create([Bind(Include = "CarNumber,Kilometer,IsProper,IsAvailable,CarTypeID,StoreID")] Car car)
@@ -575,7 +687,11 @@ namespace Cars.Controllers
             return View(car);
         }
 
-        // GET: Cars/Edit/5
+        /// <summary>
+        /// edit new car view
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
         public ActionResult Edit(int? id)
         {
             if (id == null)
@@ -592,9 +708,11 @@ namespace Cars.Controllers
             return View(car);
         }
 
-        // POST: Cars/Edit/5
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
-        // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
+        /// <summary>
+        /// edit new car post
+        /// </summary>
+        /// <param name="car"></param>
+        /// <returns></returns>
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult Edit([Bind(Include = "ID,CarNumber,Kilometer,IsProper,IsAvailable,CarTypeID,StoreID")] Car car)
@@ -624,14 +742,10 @@ namespace Cars.Controllers
             {
                 return HttpNotFound();
             }
-            //ViewBag.CarTypeID = new SelectList(db.CarTypes, "CarTypeID", "ModelName", car.CarTypeID);
-            //ViewBag.StoreID = new SelectList(db.stores, "StoreID", "StoreName", car.StoreID);
             return View(user);
         }
 
         // POST: Cars/EditUser/5
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
-        // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult EditUser([Bind(Include = "UserID,FullName,UserName,BirthDate,Sex,Email,Password,IsEmployee,IsManager")] User user)
@@ -642,11 +756,14 @@ namespace Cars.Controllers
                 db.SaveChanges();
                 return View("Purchase");
             }
-            //ViewBag.CarTypeID = new SelectList(db.CarTypes, "CarTypeID", "ModelName", car.CarTypeID);
-            //ViewBag.StoreID = new SelectList(db.stores, "StoreID", "StoreName", car.StoreID);
             return View(user);
         }
 
+        /// <summary>
+        /// delede car view
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
         // GET: Cars/Delete/5
         public ActionResult Delete(int? id)
         {
@@ -662,6 +779,11 @@ namespace Cars.Controllers
             return View(car);
         }
 
+        /// <summary>
+        /// delete car post
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
         // POST: Cars/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
@@ -716,14 +838,10 @@ namespace Cars.Controllers
             {
                 return HttpNotFound();
             }
-            //ViewBag.CarTypeID = new SelectList(db.CarTypes, "CarTypeID", "ModelName", car.CarTypeID);
-            //ViewBag.StoreID = new SelectList(db.stores, "StoreID", "StoreName", car.StoreID);
             return View(rental);
         }
 
         // POST: Cars/EditOrder/5
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
-        // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult EditOrder(Rental rental)
@@ -734,8 +852,6 @@ namespace Cars.Controllers
                 db.SaveChanges();
                 return View("Purchase");
             }
-            //ViewBag.CarTypeID = new SelectList(db.CarTypes, "CarTypeID", "ModelName", car.CarTypeID);
-            //ViewBag.StoreID = new SelectList(db.stores, "StoreID", "StoreName", car.StoreID);
             return View(rental);
         }
 
@@ -812,14 +928,10 @@ namespace Cars.Controllers
             {
                 return HttpNotFound();
             }
-            //ViewBag.CarTypeID = new SelectList(db.CarTypes, "CarTypeID", "ModelName", car.CarTypeID);
-            //ViewBag.StoreID = new SelectList(db.stores, "StoreID", "StoreName", car.StoreID);
             return View(carType);
         }
 
         // POST: Cars/EditCarType/5
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
-        // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult EditCarType(CarType carType)
@@ -871,8 +983,6 @@ namespace Cars.Controllers
 
         public ActionResult CreateCarType()
         {
-            //ViewBag.users = db.Users.ToList();
-            //ViewBag.cars = db.Cars.ToList();
             return View();
         }
 
@@ -889,6 +999,10 @@ namespace Cars.Controllers
             return View(carType);
         }
 
+        /// <summary>
+        /// contact view
+        /// </summary>
+        /// <returns></returns>
         public ActionResult Contact()
         {
             return View();

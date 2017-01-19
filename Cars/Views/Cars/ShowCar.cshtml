@@ -172,6 +172,35 @@
         $("#endDate").change(function () {
             $("#endDate").css("borderColor", "green").popover('destroy');
         });
+        var temp;
+        var models = "@ViewBag.model";
+        var modelsArray = models.split(",");
+        $("#slctMani").change(function () {
+            $("#slctModel")
+                .empty()
+                .removeAttr('readonly')
+                .append($("<option></option>")
+                .attr({ "value": "", "disabled": "disabled", "selected": "selected", "hidden": "hidden" })
+                .text("Model"));
+            if ($("#slctMani").val() == "") {
+                $.each(modelsArray, function (i, value) {
+                    temp = value.split(" ");
+                    $("#slctModel").append($("<option></option>")
+                        .attr("value", temp[1])
+                        .text(value));
+                });
+            }
+            else {
+                $.each(modelsArray, function (i, value) {
+                    temp = value.split(" ");
+                    if (temp[0] == $("#slctMani").val()) {
+                        $("#slctModel").append($("<option></option>")
+                            .attr("value", temp[1])
+                            .text(temp[1]));
+                    }
+                });
+            }
+        });
     });
 
 </script>
@@ -239,13 +268,13 @@
                 </td>
                 <td>
                     <div style='width:70%; margin-left:0%'>
-                        <select class="form-control" id="slctModel" oninput="sendFilter()">
-                            <option value="" disabled selected hidden>Model</option>
-                            <option value="">ALL</option>
-                            @foreach (var item in ViewBag.model)
+                        <select readonly class="form-control" id="slctModel" oninput="sendFilter()">
+                            <option value="" disabled="disabled" selected="selected" hidden>Model</option>
+                            @*<option value="">ALL</option>*@
+                            @*@foreach (var item in ViewBag.model)
                             {
                                 <option value="@item">@item</option>
-                            }
+                            }*@
                         </select>
                     </div>
                 </td>
