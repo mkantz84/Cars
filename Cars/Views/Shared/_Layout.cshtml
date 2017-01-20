@@ -13,7 +13,7 @@
 
     <script>
         $(document).ready(function () {
-            var authid ="@Session["userId"]"; 
+            var authid = "@Session["userId"]";
             var authrole = "@Session["authrole"]";
 
             if (authid == "") {
@@ -31,9 +31,6 @@
                     var car = items[i].split(" ");
                     $("#ftr").append
                         ('<a href="/Cars/ShowCar?manifacturer=' + car[0] + '&model=' + car[1] + '" class = "btn btn-default btn-sm">' + car[0] + '-' + car[1] + ' </a>   ');
-                    //$("#ftr").append
-                    //    ('<a href="/Cars/ShowCar?manifacturer=' + car[0] + '&model=' + car[1] + '" >' + '<input type="button" class="btn btn-group-justified" value="' + car[0] + '-' + car[1] + '" /></a>');
-
                 }
             }
         });
@@ -41,7 +38,7 @@
 
 </head>
 <body>
-    <nav class="navbar navbar-default" >
+    <nav class="navbar navbar-default">
         <div class="container-fluid">
             <!-- Brand and toggle get grouped for better mobile display -->
             <div class="navbar-header">
@@ -52,15 +49,13 @@
                     <span class="icon-bar"></span>
                 </button>
                 <a class="navbar-brand" href="/cars/index">
-                    <img style="max-width:50px; margin-top: -7px" alt="Brand Logo" src="~/Content/themes/base/images/logo.jpg">
+                    <img style="max-width:90px; margin-top: -7px" alt="Brand Logo" src="~/Content/themes/base/images/logo.png">
                 </a>
-                @*<a class="navbar-brand" href="/cars/index">TECR</a>*@
             </div>
 
             <!-- Collect the nav links, forms, and other content for toggling -->
             <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
                 <ul class="nav navbar-nav">
-                    @*<li class="active"><a href="#">Link <span class="sr-only">(current)</span></a></li>*@
                     <li>
                         <a href="/cars/carslist">CARS</a>
                     </li>
@@ -68,14 +63,6 @@
                         <a href="/cars/Contact">CONTACT</a>
                     </li>
                 </ul>
-                @*<form class="navbar-form navbar-left">
-                        <div class="form-group">
-                            <input type="text" class="form-control" placeholder="Search">
-                        </div>
-                        <button type="submit" class="btn btn-default">Submit</button>
-                    </form>*@
-
-
                 <ul class="nav navbar-nav navbar-right" id="notsigned" hidden="hidden">
                     <li><a href="/cars/createuser"><span class="glyphicon glyphicon-user"></span> Sign Up</a></li>
 
@@ -120,11 +107,5 @@
             <p id="ftr"></p>
         </footer>
     </div>
-    @*<script src="~/Scripts/jquery-1.12.4.min.js"></script>
-        <script src="~/Scripts/bootstrap.min.js"></script>*@
-
-
-
-
 </body>
 </html>

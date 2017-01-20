@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Cars.Code;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
@@ -13,6 +14,7 @@ namespace Cars.Models
     {
         [Key]
         [Required]
+        [ValidationUserId]
         public string UserID { get; set; }
         [Required]
         public string FullName { get; set; }

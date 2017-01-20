@@ -130,14 +130,19 @@
             e.preventDefault();
         });
         $(document).ready(function () {
-            var isFromCreate="@HttpContext.Current.Request.RequestContext.RouteData.Values["action"].ToString()";
+            var isFromCreate = "@HttpContext.Current.Request.RequestContext.RouteData.Values["action"].ToString()";
             if (isFromCreate == "createuser") {
                 $("#register-form").delay(0).fadeIn(0);
                 $("#login-form").fadeOut(0);
                 $('#login-form-link').removeClass('active');
                 $("#register-form").addClass('active');
             }
-        })
+            var exist = "@ViewBag.exist"
+            if (exist == "exist") {
+                $('#alert').text("The user allready exist in the system");
+                $('#alerti').toggle();
+            }
+        });
     });
 </script>
 
@@ -184,6 +189,7 @@
                             {
                                 @id = "register-form",
                                 @role = "form",
+                                autocomplete = "off",
                                 @style = "display: none"
                             }))
                             {
@@ -191,9 +197,18 @@
 
 
                                 @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+                                <div class="alert alert-warning" id="alerti" style="display:none">
+                                    <strong id="alert"></strong>
+                                </div>
+
                                 <div class="form-group">
                                     @Html.EditorFor(model => model.FullName, new { htmlAttributes = new { @tabindex = "1", @class = "form-control", @placeholder = "Full Name", @style = "max-width: none" } })
                                     @Html.ValidationMessageFor(model => model.FullName, "", new { @class = "text-danger" })
+                                </div>
+
+                                <div class="form-group">
+                                    @Html.EditorFor(model => model.UserID, new { htmlAttributes = new { @tabindex = "2", @class = "form-control", @placeholder = "ID", @style = "max-width: none" } })
+                                    @Html.ValidationMessageFor(model => model.UserID, "", new { @class = "text-danger" })
                                 </div>
 
                                 <div class="form-group">
@@ -225,14 +240,13 @@
                                     @Html.ValidationMessageFor(model => model.Password, "", new { @class = "text-danger" })
                                 </div>
 
-                                    <div class="form-group">
-                                        <div class="row">
-                                            <div class="col-sm-6 col-sm-offset-3">
-                                                <input type="submit" name="register-submit" id="register-submit" tabindex="4" class="form-control btn btn-register" value="Register Now">
-                                            </div>
+                                <div class="form-group">
+                                    <div class="row">
+                                        <div class="col-sm-6 col-sm-offset-3">
+                                            <input type="submit" name="register-submit" id="register-submit" tabindex="4" class="form-control btn btn-register" value="Register Now">
                                         </div>
                                     </div>
-
+                                </div>
                             }
                         </div>
                     </div>

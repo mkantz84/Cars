@@ -4,7 +4,6 @@ using System.Data;
 using System.Data.Entity;
 using System.Linq;
 using System.Net;
-using System.Web;
 using System.Web.Mvc;
 using Cars.Models;
 using Cars.DAL;
@@ -48,11 +47,6 @@ namespace Cars.Controllers
                 }
             }
         }
-
-        //public ActionResult UsersList()
-        //{
-        //    return View(db.Users.ToList());
-        //}
 
         /// <summary>
         /// presenting a specific car from the footer
@@ -496,12 +490,7 @@ namespace Cars.Controllers
         {
             return View(db.Cars.ToList());
         }
-
-        //public ActionResult thanks()
-        //{
-        //    return View();
-        //}
-
+        
         /// <summary>
         /// login view
         /// </summary>
