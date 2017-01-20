@@ -5,7 +5,6 @@
 }
 <script>
     var funcs = [];
-
     function createfunc(i) {
         return function() {
             var totalId = "#total" + i;
@@ -54,13 +53,6 @@
             var carNum=$(carNumberId).val();
             var userId=$(userIdId).val();
             $(formId).prop('action', "/cars/returning?returningDate="+ret+"&rentalId="+rental+"&carNumber="+carNum+"&userId="+userId);
-            @*$(formId).submit(function() {
-                var url = @Url.Action("Action","Controller");
-                var fu = "newValueOfFU"; // New value for FU
-                $('#MyID').prop('action', url + "?FU=" + fu;
-                return true;
-            });*@
-
         };
     }
 
@@ -139,14 +131,12 @@
                                         </dt>
                                         <dd id="@dayPrice">
                                             @item.Car.CarType.DailyPrice$
-                                            @*@ViewBag.dailyPrice$*@
                                         </dd>
                                         <dt style="width:unset">
                                             Price per day late
                                         </dt>
                                         <dd id="@lateDayPrice">
                                             @item.Car.CarType.LateDayPrice$
-                                            @*@ViewBag.latePrice$*@
                                         </dd>
                                         <dt style="width:unset">
                                             @Html.DisplayNameFor(model => model.ReturningDate):
@@ -168,10 +158,6 @@
                                         <dd id="@totalId">
 
                                         </dd>
-                                        
-                                        @*<dd style="display:none" id="@rentalId">@item.RentalID</dd>
-                                        <dd hidden="hidden" id="@carNumberId">@item.CarNumber</dd>
-                                        <dd hidden="hidden" id="@userIdId">@item.UserId</dd>*@
                                     </dl>
                                 </p>
                                 <input type="hidden" id="@rentalId" value="@item.RentalID" />
@@ -200,7 +186,6 @@
                             mm='0'+mm
                         }
                         today = yyyy+'-'+mm+'-'+dd;
-                        //var id="return"+"@i.ToString()";
                         document.getElementById("@returnId").setAttribute("min", today);
                     </script>
                     i++;

@@ -74,7 +74,6 @@
 <script src="~/Scripts/bootstrap-datepicker.js"></script>
 
 <script>
-
     function validate(manifacturer, model) {
         var start = document.getElementById("startDate").value;
         var end = document.getElementById("endDate").value;
@@ -142,9 +141,6 @@
         $.post('InitFilter',
             { filterGear: gear, filterYear: year, manifacturer: mani, model: model, freeText: freeText });
     }
-</script>
-
-<script>
     $(document).ready(function () {
         $('#datepicker').datepicker({
             startDate: "today",
@@ -209,9 +205,7 @@
             }
         });
     });
-
 </script>
-
 
 <div class="container">
     <div class="well well-sm">
@@ -256,7 +250,7 @@
                             <option value="0">ALL</option>
                             @foreach (var item in ViewBag.years)
                             {
-                                <option value="@item">@item</option>
+                            <option value="@item">@item</option>
                             }
                         </select>
                     </div>
@@ -268,7 +262,7 @@
                             <option value="">ALL</option>
                             @foreach (var item in ViewBag.mani)
                             {
-                                <option value="@item">@item</option>
+                            <option value="@item">@item</option>
                             }
                         </select>
                     </div>
@@ -279,9 +273,9 @@
                             <option value="" disabled="disabled" selected="selected" hidden>Model</option>
                             @*<option value="">ALL</option>*@
                             @*@foreach (var item in ViewBag.model)
-                            {
-                                <option value="@item">@item</option>
-                            }*@
+                                {
+                                    <option value="@item">@item</option>
+                                }*@
                         </select>
                     </div>
                 </td>

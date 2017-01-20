@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-using System.ComponentModel.DataAnnotations;
-
+﻿
 namespace Cars.Models
 {
     public class Car
@@ -15,10 +10,6 @@ namespace Cars.Models
         public bool IsAvailable { get; set; }
         public int CarTypeID { get; set; }
         public int StoreID { get; set; }
-        //[DataType(DataType.Date)]
-        //public DateTime? HireDateStart { get; set; }
-        //[DataType(DataType.Date)]
-        //public DateTime? HireDateEnd { get; set; }
 
         public virtual Store Store { get; set; }
         public virtual CarType CarType { get; set; }

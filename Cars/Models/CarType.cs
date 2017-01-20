@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-using System.ComponentModel.DataAnnotations;
+﻿using System.Collections.Generic;
 
 namespace Cars.Models
 {
@@ -24,10 +20,5 @@ namespace Cars.Models
         public string picture { get; set; }
 
         public virtual ICollection<Car> Cars { get; set; }
-
-        //public override string ToString()
-        //{
-        //    return string.Format("{0} {1}", ModelName, ManifacturerName);
-        //}
     }
 }

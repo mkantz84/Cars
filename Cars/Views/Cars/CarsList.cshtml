@@ -267,11 +267,6 @@
                     <div style='width:70%; margin-left:0%'>
                         <select readonly class="form-control" id="slctModel" oninput="sendFilter()">
                             <option value="" disabled="disabled" selected="selected" hidden>Model</option>
-                            @*<option value="">ALL</option>
-                                @foreach (var item in ViewBag.model)
-                                {
-                                <option value="@item">@item</option>
-                                }*@
                         </select>
                     </div>
                 </td>
@@ -377,50 +372,3 @@
     </nav>
 
 </div>
-
-
-
-
-@*<h2>CarsList</h2>
-        Start Date:
-        from:<input type="date" id="txtStartDate" value="" />
-        to:<input type="date" id="txtEndDate" value="" />
-    <table class="table">
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.CarType.ModelName)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Store.StoreName)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.CarNumber)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Kilometer)
-            </th>
-            <th></th>
-        </tr>
-
-        @foreach (var item in Model)
-        {
-            <tr>
-                <td>
-                    @Html.DisplayFor(modelItem => item.CarType.ModelName)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Store.StoreName)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.CarNumber)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Kilometer)
-                </td>
-                <td onclick="a(@item.CarNumber)">
-                    @Html.ActionLink("Continue", "Details", new { id = item.ID }, htmlAttributes: new { @onclick = "return validate()" })
-                </td>
-            </tr>
-        }
-
-    </table>*@
