@@ -60,14 +60,6 @@
     .list-group-item-text {
         margin: 0 0 11px;
     }
-
-    /*a.a-btn {
-        display: block;
-        width: 100px;
-        height:30px;
-        align-content:center;
-        background-color:lightgrey
-    }*/
 </style>
 
 <link href="~/Content/bootstrap-datepicker.css" rel="stylesheet" />
@@ -122,10 +114,6 @@
         else if (!items.includes(manifacturer+" "+model)) {
             localStorage.interests += "," + manifacturer+" "+model;
         }
-
-
-        $.post('InitStartDate', { startDate: start });
-        $.post('InitEndDate', { endDate: end });
     }
     function sendFilter() {
         var gear = $('#slctGear').val();
@@ -145,9 +133,6 @@
         $.post('InitFilter',
             { filterGear: gear, filterYear: year, manifacturer: mani, model: model, freeText: freeText });
     }
-</script>
-
-<script>
     $(document).ready(function () {
         $('#datepicker').datepicker({
             startDate: "today",
@@ -156,6 +141,14 @@
             autoclose: true,
             todayHighlight: true
         });
+        var dateStart=new Date("@ViewBag.start");
+        var dateEnd=new Date("@ViewBag.end");
+        if (dateStart.toString()!="01/01/0001") {
+            $("#startDate").datepicker('update', dateStart);
+        }
+        if (dateEnd.toString()!="01/01/0001") {
+            $("#endDate").datepicker('update', dateEnd);
+        }
         $('#list').click(function (event) {
             event.preventDefault();
             $('#products .item').addClass('list-group-item');
@@ -171,12 +164,15 @@
         }
         $("#startDate").change(function () {
             $("#startDate").css("borderColor","green").popover('destroy');
+            $.post('InitStartDate', { startDate: document.getElementById("startDate").value });
         });
         $("#endDate").change(function () {
             $("#endDate").css("borderColor","green").popover('destroy');
+            $.post('InitEndDate', { endDate: document.getElementById("endDate").value });
         });
         var temp;
         var models="@ViewBag.model";
+        models=models.slice(0,-1);
         var modelsArray=models.split(",");
         $("#slctMani").change(function () {
             $("#slctModel")
@@ -203,11 +199,9 @@
                     }
                 });
             }
-            
         });
     });
 </script>
-
 
 <div class="container">
     <div class="well well-sm">

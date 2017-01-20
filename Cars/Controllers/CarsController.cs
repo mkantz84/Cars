@@ -69,6 +69,8 @@ namespace Cars.Controllers
             {
                 ViewBag.model += item.ManifacturerName + " " + item.ModelName + ",";
             }
+            ViewBag.start = start.ToString("MM/dd/yyyy");
+            ViewBag.end = end.ToString("MM/dd/yyyy");
             CarType carType = db.CarTypes.FirstOrDefault
                 (t => t.ManifacturerName == manifacturer && t.ModelName == model);
             return View(carType);
@@ -144,6 +146,8 @@ namespace Cars.Controllers
             {
                 ViewBag.pages = (carsNum / take) + 1;
             }
+            ViewBag.start = start.ToString("MM/dd/yyyy");
+            ViewBag.end = end.ToString("MM/dd/yyyy");
         }
 
         /// <summary>
